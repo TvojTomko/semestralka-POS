@@ -1,3 +1,6 @@
+protokoly -tomko/ado
+http,https,ftp,ftps
+
 planovanie stahovania -tomko
 naplanuj protocol hostname filename start
 prida sa do suboru 
@@ -41,6 +44,9 @@ history
 pause
 resume
 stop
+setpath
+help
+exit
 odchytavanie signalov
 
 
