@@ -14,8 +14,6 @@ int main(int argc, char* argv[]) {
             std::cout << "not enough arguments\n";
             return 1;
         }
-
-
         boost::asio::io_context io_context;
 
         // Get a list of endpoints corresponding to the server name.
@@ -73,7 +71,7 @@ int main(int argc, char* argv[]) {
             std::cout << header << "\n";
         std::cout << "\n";
 
-        std::ofstream MyFile("../"+std::string(argv[2]));
+        std::ofstream MyFile("../"+std::string(argv[2]).substr(std::string(argv[2]).find_last_of("/\\")+1) );
         // Write whatever content we already have to output.
         if (response.size() > 0)
             MyFile << &response;

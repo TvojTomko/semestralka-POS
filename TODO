@@ -1,0 +1,46 @@
+planovanie stahovania
+naplanuj protocol hostname filename start
+prida sa do suboru 
+pri spusteni programu sa vytvori nove vlakno ktore bude kazdu minutu kontrolovat ci sa ma nieco zacat stahovat ak ano tak sa vytvori dalsie vlakno kde sa bude stahovat dana vec ktora sa odpise zo suboru
+
+ukonci stahovanie
+vypis
+zrus poradove_cislo
+thready budu vo vectore uzivatel si vyberie ktore zrusit vymazat nedostahovany subor
+
+spravovat lokalne adresare
+ls
+mkdir
+rmdir
+rm
+cd
+
+spravovat historiu stahovania
+vypis historie
+vsetko co sa da stahovat sa ulozi do suboru info to sa potom vypise napr zaciatok stahovania velkost koniec stahovania atd
+
+definovat prioritu stahovania
+??
+
+pozastavit alebo obnovit stahovanie
+treba zistit
+https://superuser.com/a/641957
+iba http/https
+v subore uchovavat velkost kolko stiahnuteho z kolkatich pre ktory subor a cestu
+
+
+
+funkcie konzoly
+ls
+mkdir
+rmdir
+rm
+cd
+download 
+history
+pause
+resume
+stop
+odchytavanie signalov
+
+
