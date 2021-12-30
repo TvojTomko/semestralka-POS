@@ -46,6 +46,7 @@ resume
 stop
 setpath
 help
+info
 exit
 odchytavanie signalov
 

@@ -3,5 +3,5 @@ project(semestralka-POS)
 
 set(CMAKE_CXX_STANDARD 14)
 
-add_executable(semestralka-POS main.cpp)
+add_executable(semestralka-POS main.cpp console.cpp console.h download.cpp download.h)
 target_link_libraries(semestralka-POS pthread)
