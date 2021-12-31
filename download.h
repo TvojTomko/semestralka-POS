@@ -9,6 +9,7 @@
 #include <boost/asio.hpp>
 #include <thread>
 #include <stdlib.h>
+#include <filesystem>
 
 
 #ifndef SEMESTRALKA_POS_DOWNLOAD_H
@@ -20,16 +21,39 @@ class download {
 private:
     std::string protocol;
     std::string filename;
+    std::string localFilename;
     std::string hostname;
     std::string path;
+    std::string filepath;
     int priority;
-    long long size;
-    long long currentSize;
-    std::jthread t;
+    double size;
+    double currentSize;
+    bool pause;
+    bool resume;
+    bool stop;
+
 
 
 public:
     std::string msg="";
+
+    const std::string &getFilepath() const;
+
+    const std::string &getLocalFilename() const;
+
+    const std::string &getPath() const;
+
+    int getPriority() const;
+
+    void startDownload();
+
+    void pauseDownload();
+
+    void resumeDownload();
+
+    void stopDownload();
+
+    double progress();
 
     const std::string &getPpath() const;
 
@@ -39,7 +63,7 @@ public:
 
     void setMsg(const std::string &msg);
 
-    void stop();
+    void checkfile(std::string &filename);
 
     download(std::string protocol,std::string filename,std::string hostname,std::string ppath);
 
@@ -47,7 +71,7 @@ public:
 
     void setAProtocol(const std::string &aProtocol);
 
-    static int http(std::string hostname, std::string filename,download* instance);
+    int http();
 
     void setFilename(const std::string &filename);
 

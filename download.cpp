@@ -10,12 +10,42 @@ download::download(std::string pprotocol,std::string pfilename,std::string phost
     path=ppath;
     size=0;
     currentSize=0;
-    msg="nieje";
+    msg="No";
     priority=0;
-    t=std::jthread(download::http,hostname,filename,this);
+
 }
 
-int download::http(std::string hostname,std::string filename,download* instance){
+void download::startDownload() {
+if(protocol=="http"){
+    http();
+}
+}
+void download::pauseDownload() {
+    pause=true;
+    resume=false;
+    setMsg("PAUSED");
+}
+void download::resumeDownload() {
+    resume=true;
+    pause=false;
+    if(stop){
+        return;
+    }
+    http();
+
+}
+void download::stopDownload() {
+    stop=true;
+    pause=true;
+    msg="STOP";
+    std::ostringstream oss;
+    oss<<"rm "<<localFilename;
+    system(oss.str().c_str());
+
+    localFilename="Deleted";
+}
+
+int download::http(){
     try {
         if (hostname.empty() || filename.empty()) {
             std::cout << "not enough arguments\n";
@@ -38,6 +68,9 @@ int download::http(std::string hostname,std::string filename,download* instance)
         std::ostream request_stream(&request);
         request_stream << "GET " << filename << " HTTP/1.0\r\n";
         request_stream << "Host: " << hostname << "\r\n";
+        if(resume){
+            request_stream << "Range: bytes="<<std::to_string((int)currentSize)<<"-" << "\r\n";
+        }
         request_stream << "Accept: */*\r\n";
         request_stream << "Connection: close\r\n\r\n";
 
@@ -62,59 +95,55 @@ int download::http(std::string hostname,std::string filename,download* instance)
             std::cout << "Invalid response\n";
             return 1;
         }
-        if (status_code != 200) {
-            std::cout << "Response returned with status code " << status_code << "\n";
-            return 1;
-        }
 
         // Read the response headers, which are terminated by a blank line.
         boost::asio::read_until(socket, response, "\r\n\r\n");
 
         // Process the response headers.
         std::string header;
-        while (std::getline(response_stream, header) && header != "\r"){
-            std::cout << header << "\n";
-            if (header.find("Content-Length") != std::string::npos) {
-                instance->setSize(std::stoi(header.substr( header.find(" ") ,header.size())));
+        while (std::getline(response_stream, header) && header != "\r") {
+
+            if (!resume) {
+                if (header.find("Content-Length") != std::string::npos) {
+                    setSize(std::stoi(header.substr(header.find(" "), header.size())));
+                }
             }
         }
-        std::cout << "\n";
-        std::string filenamenew = std::string(filename).substr(std::string(filename).find_last_of("/\\") + 1);
-        std::ofstream MyFile(filenamenew);
+        if(!resume){
+            std::string filenamenew = std::string(filename).substr(std::string(filename).find_last_of("/\\") + 1);
+            checkfile(filenamenew);
+            localFilename=filenamenew;
+            filepath=path+localFilename;
+        }
+        std::ofstream MyFile;
+        MyFile.open((filepath),std::ios::app);
+
         // Write whatever content we already have to output.
-        int size=0;
+        int size=currentSize;
         if (response.size() > 0) {
-            //std::cout << response.size() << std::endl;
             size+=response.size();
             MyFile << &response;
-            //std::cout << response.size() << std::endl;
         }
 
         // Read until EOF, writing data to output as we go.
         boost::system::error_code error;
         while (boost::asio::read(socket, response,
                                  boost::asio::transfer_at_least(1), error)) {
-            //std::cout << response.size() << std::endl;
             size+=response.size();
             MyFile << &response;
-            instance->currentSize=size;
-            //std::cout << response.size() << std::endl;
+            currentSize=size;
+            if(pause){
+                MyFile.close();
+                return 0;
+            }
         }
-        std::cout <<size<<std::endl;
 
 
         if (error != boost::asio::error::eof)
             throw boost::system::system_error(error);
         MyFile.close();
-        std::cout<<"Checkpoint"<<std::endl;
-        instance->stop();
-        instance->setMsg("je");
-        if(!instance->getPpath().empty()){
-            std::ostringstream oss;
-            oss<<"mv "<<filenamenew<<" "<<instance->getPpath();
-            system(oss.str().c_str());
-        }
-
+        setMsg("Yes");
+        return 0;
     }
 
     catch (std::exception& e)
@@ -166,11 +195,6 @@ void download::setAProtocol(const std::string &aProtocol) {
     protocol = aProtocol;
 }
 
-void download::stop(){
-    t.request_stop();
-}
-
-
 const std::string &download::getMsg() const {
     return msg;
 }
@@ -185,4 +209,53 @@ const std::string &download::getPpath() const {
 
 void download::setPpath(const std::string &ppath) {
     download::path = ppath;
+}
+
+double download::progress() {
+    return currentSize/size*100;
+}
+void download::checkfile(std::string &filename) {
+    bool exists = true;
+    int i=1;
+    std::string newFilenamecheck=filename;
+
+    while (exists) {
+
+        if (!path.empty()) {
+            std::filesystem::current_path(path);
+        }
+        if (std::filesystem::exists(newFilenamecheck)) {
+            if(i>1){
+                newFilenamecheck=filename;
+            }
+            std::string token=newFilenamecheck.substr(0, newFilenamecheck.find("."));
+            token+=std::to_string(i);
+            token+=newFilenamecheck.substr( newFilenamecheck.find("."),newFilenamecheck.length());
+            newFilenamecheck=token;
+            i++;
+        }else{
+            exists=false;
+            filename=newFilenamecheck;
+            return;
+        }
+
+    }
+
+}
+
+
+const std::string &download::getLocalFilename() const {
+    return localFilename;
+}
+
+const std::string &download::getPath() const {
+    return path;
+}
+
+int download::getPriority() const {
+    return priority;
+}
+
+const std::string &download::getFilepath() const {
+    return filepath;
 }
