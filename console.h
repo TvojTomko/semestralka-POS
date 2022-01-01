@@ -18,23 +18,24 @@
 class console {
 private:
     std::string pathtoDownload;
-    std::vector<std::string>bashCommands{"ls",
-                                         "mkdir",
-                                         "rmdir",
-                                         "rm",
-                                         "cd"
+    std::vector<std::string> bashCommands{"ls",
+                                          "mkdir",
+                                          "rmdir",
+                                          "rm",
+                                          "cd"
     };
-    std::vector<std::string>customCommands{"download",
-                                           "history",
-                                           "pause",
-                                           "resume",
-                                           "stop",
-                                           "setpath",
-                                           "help",
-                                           "exit",
-                                           "info",
-                                           "startAll",
-                                           "pauseAll"
+    std::vector<std::string> customCommands{"download",
+                                            "history",
+                                            "pause",
+                                            "resume",
+                                            "stop",
+                                            "setpath",
+                                            "help",
+                                            "exit",
+                                            "info",
+                                            "startAll",
+                                            "pauseAll",
+                                            "manage"
     };
     std::string space_delimiter = " ";
 public:
@@ -44,10 +45,14 @@ public:
     const std::string &getPathtoDownload() const;
 
     void setPathtoDownload(const std::string &pathtoDownload);
+
     void info();
-    void exitt(bool& exit);
+
+    void exitt(bool &exit);
+
     int resolveCommand(std::string input);
-    void makeConsoleCommand(std::string &command,std::string & input);
+
+    void makeConsoleCommand(std::string &command, std::string &input);
 };
 
 

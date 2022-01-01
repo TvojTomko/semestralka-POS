@@ -13,7 +13,6 @@
 #include <filesystem>
 
 
-
 #ifndef SEMESTRALKA_POS_DOWNLOAD_H
 #define SEMESTRALKA_POS_DOWNLOAD_H
 
@@ -36,11 +35,19 @@ private:
     bool pause;
     bool resume;
     bool stop;
-
+    bool downloading;
 
 
 public:
-    std::string msg="";
+    std::string msg = "";
+
+    bool isDownloading() const;
+
+    bool isPause() const;
+
+    bool isResume() const;
+
+    bool isStop() const;
 
     const std::string &getFilepath() const;
 
@@ -70,7 +77,7 @@ public:
 
     void checkfile(std::string &filename);
 
-    download(std::string protocol,std::string filename,std::string hostname,std::string ppath);
+    download(std::string protocol, std::string filename, std::string hostname, std::string ppath);
 
     const std::string &getAProtocol() const;
 

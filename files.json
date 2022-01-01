@@ -2,6 +2,7 @@
   {
     "hostname": "www.asd.sk",
     "filename": "images/background.png",
+    "localfilename": "background.png",
     "path": "cesta/asd",
     "size": 5555555,
     "downloaded": 123456,

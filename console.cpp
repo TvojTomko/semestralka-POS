@@ -43,22 +43,25 @@ void console::listener() {
                 exitt(exit);
                 dH->pauseAll();
             } else if (first == "info") {
-                std::jthread th(&downloadHandler::listOfDownloads,dH);
+                std::jthread th(&downloadHandler::listOfDownloads, dH);
                 th.detach();
             } else if (first == "startAll") {
-                std::jthread th(&downloadHandler::startAll,dH);
+                std::jthread th(&downloadHandler::startAll, dH);
                 th.detach();
             } else if (first == "pauseAll") {
-                std::jthread th(&downloadHandler::pauseAll,dH);
+                std::jthread th(&downloadHandler::pauseAll, dH);
                 th.detach();
+            } else if (first == "manage") {
+                // dH->manageDownloadings();
             }
-        }else {
-                std::cout << "Unsuported command" << std::endl;
+        } else {
+            std::cout << "Unsuported command" << std::endl;
         }
 
 
     }
 }
+
 /*
 bool IsMarkedToDelete(const download* o)
 {
@@ -80,22 +83,24 @@ void console::setPathtoDownload(const std::string &pathtoDownload) {
 }
 
 void console::exitt(bool &exit) {
-    exit=true;
+    exit = true;
 }
+
 int console::resolveCommand(std::string input) {
-    if(std::find(bashCommands.begin(),bashCommands.end(),input)!=bashCommands.end()){
+    if (std::find(bashCommands.begin(), bashCommands.end(), input) != bashCommands.end()) {
         return 0;
     }
-    if(std::find(customCommands.begin(),customCommands.end(),input)!=customCommands.end()){
+    if (std::find(customCommands.begin(), customCommands.end(), input) != customCommands.end()) {
         return 1;
     }
     return 2;
 }
-void console::makeConsoleCommand(std::string & command,std::string & input){
-    if (!getPathtoDownload().empty()){
-        command+="cd ";
-        command+=getPathtoDownload();
-        command+=" && ";
+
+void console::makeConsoleCommand(std::string &command, std::string &input) {
+    if (!getPathtoDownload().empty()) {
+        command += "cd ";
+        command += getPathtoDownload();
+        command += " && ";
     }
-    command+=input;
+    command += input;
 }
