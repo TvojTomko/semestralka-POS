@@ -35,7 +35,8 @@ private:
                                             "info",
                                             "startAll",
                                             "pauseAll",
-                                            "manage"
+                                            "manage",
+                                            "setPriority"
     };
     std::string space_delimiter = " ";
 public:

@@ -6,7 +6,7 @@
 
 downloadHandler::downloadHandler() {
     downloading = 0;
-    maxDownloading = 2;
+    maxDownloading = 4;
 }
 
 void downloadHandler::startDownloading(int i) {
@@ -29,7 +29,7 @@ void downloadHandler::stopDownloading(int i) {
 void downloadHandler::addDownload(download *d) {
     downloads.push_back(d);
 }
-/*
+
 //Producent vzdy najde 1 download s najvyssiou prioritou ktory sa este nestahuje
 //Konzument ked Producent najde download s najvyssiou prioritou skontroluje ci je vyssia ako aktualnhe stahovane ak ano tak pausne stahovanie s najnizsiou prioritou a zacne stahovat dany subor
 void downloadHandler::manageDownloadings() {
@@ -37,48 +37,53 @@ void downloadHandler::manageDownloadings() {
     th.detach();
     std::jthread th1(&downloadHandler::consume, this);
     th1.detach();
-}*/
+    sConsume.release();
+}
 
-/*
+
 void downloadHandler::produce() {
     while (!exit) {
-        std::unique_lock<std::mutex> ul(mtx);
-        data = findHighestNotDownloading();
-        ready = true;
-        ul.unlock();
-        cv.notify_one();
-        //ul.lock();
-        std::cout << "somProduce" << std::endl;
-        cv.wait(ul, [this]() { return ready == false; });
+        bool isAvailable = false;
+        sConsume.acquire();
+        int index;
+        while (!isAvailable) {
+            index = findHighestNotDownloading();
+            if (index >= 0) {
+                isAvailable = true;
+            }
+        }
+        data = index;
+        sProduce.release();
     }
 }
 
 void downloadHandler::consume() {
     while (!exit) {
-        std::unique_lock<std::mutex> ul(mtx);
-        cv.wait(ul, [this]() { return ready; });
+        sProduce.acquire();
         int lowest = findLowestDownloading();
         findNumberOfDownloading();
-        if (lowest < 0 && data != -1) {
-            //nobody is downloading
-            std::jthread th(&download::startDownload, downloads.at(data));
-            th.detach();
-        } else if (downloading < maxDownloading && data != -1) {
-            //free slots
-            std::jthread th(&download::startDownload, downloads.at(data));
-            th.detach();
-        } else if (lowest != -1 && downloads.at(lowest)->getPriority() < downloads.at(data)->getPriority() &&
-                   data != -1) {
-            //higher priority
-            downloads.at(lowest)->pauseDownload();
-            std::jthread th(&download::startDownload, downloads.at(data));
-            th.detach();
+        if (!std::binary_search(downloadingIndex.begin(), downloadingIndex.end(), data)) {
+            if (downloading < maxDownloading && !downloads.at(data)->isDownloading()) {
+                //free slots
+                std::jthread th(&download::startDownload, downloads.at(data));
+                th.detach();
+                //  std::cout << "somConsume stahujem " << data << std::endl;
+                downloadingIndex.push_back(data);
+            } else if (lowest != -1 && downloads.at(lowest)->getPriority() < downloads.at(data)->getPriority() &&
+                       downloading < maxDownloading) {
+                //higher priority
+                downloads.at(lowest)->pauseDownload();
+                downloadingIndex.push_back(data);
+                downloadingIndex.erase(std::remove(downloadingIndex.begin(), downloadingIndex.end(), lowest),
+                                       downloadingIndex.end());
+                std::cout << "somConsume zastavujem  " << lowest << std::endl;
+                std::cout << "somConsume stahujem " << data << std::endl;
+                std::jthread th(&download::startDownload, downloads.at(data));
+                th.detach();
+            }
         }
         data = -1;
-        ready = false;
-        std::cout << "somConsume" << std::endl;
-        ul.unlock();
-        cv.notify_one();
+        sConsume.release();
     }
 }
 
@@ -108,19 +113,20 @@ int downloadHandler::findHighestNotDownloading() {
     int highest = -1;
     int index = -1;
     for (int i = 0; i < downloads.size(); i++) {
-        if (downloads.at(i)->getPriority() > highest && !downloads.at(i)->isDownloading()) {
+        if (downloads.at(i)->getPriority() > highest && !downloads.at(i)->isDownloading() &&
+            downloads.at(i)->getMsg() != "Yes") {
             index = i;
             highest = downloads.at(i)->getPriority();
         }
     }
     return index;
 }
-*/
+
 void downloadHandler::listOfDownloads() {
     int i = 0;
     std::cout << std::setprecision(3);
     std::cout << "Number " << "Protocol " << "Hostname " << "Filename " << "LocalFileName " << "LocalPath "
-              << "Finished " << "Progress " << "Size " << std::endl;
+              << "Finished " << "Progress " << "Size " << "Priority " << std::endl;
     while (i < downloads.size()) {
         std::cout << i << ". " << downloads.at(i)->getAProtocol() << " " << downloads.at(i)->getHostname() << " "
                   << downloads.at(i)->getFilename() << " " << downloads.at(i)->getLocalFilename() << " ";
@@ -130,7 +136,7 @@ void downloadHandler::listOfDownloads() {
             std::cout << downloads.at(i)->getFilepath() << " ";
         }
         std::cout << downloads.at(i)->getMsg() << " " << downloads.at(i)->progress() << "% "
-                  << downloads.at(i)->getSize() << std::endl;
+                  << downloads.at(i)->getSize() << " " << downloads.at(i)->getPriority() << std::endl;
         i++;
     }
 }
@@ -150,4 +156,8 @@ void downloadHandler::pauseAll() {
 
 void downloadHandler::exitProgram() {
     exit = true;
+}
+
+void downloadHandler::setPriority(int d, int p) {
+    downloads.at(d)->setPriority(p);
 }

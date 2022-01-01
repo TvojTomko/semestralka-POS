@@ -6,6 +6,8 @@
 #include <thread>
 #include <mutex>
 #include <condition_variable>
+#include <algorithm>
+
 
 #ifndef SEMESTRALKA_POS_DOWNLOADHANDLER_H
 #define SEMESTRALKA_POS_DOWNLOADHANDLER_H
@@ -23,6 +25,7 @@ private:
     std::condition_variable cv;
     bool ready = false;
     int data;
+    std::vector<int> downloadingIndex;
 
 
 public:
@@ -57,6 +60,8 @@ public:
     void findNumberOfDownloading();
 
     int findHighestNotDownloading();
+
+    void setPriority(int d, int p);
 
 
 };

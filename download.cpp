@@ -18,11 +18,11 @@ download::download(std::string pprotocol, std::string pfilename, std::string pho
 }
 
 void download::startDownload() {
-    /*downloading = true;
+    downloading = true;
     if (pause) {
         resumeDownload();
         return;
-    }*/
+    }
     if (protocol == "http") {
         http();
     } else if (protocol == "https") {
@@ -131,7 +131,12 @@ int download::http() {
             std::string filenamenew = std::string(filename).substr(std::string(filename).find_last_of("/\\") + 1);
             checkfile(filenamenew);
             localFilename = filenamenew;
-            filepath = path + "/" + localFilename;
+            if (path.empty()) {
+                filepath = "./" + localFilename;
+            } else {
+                filepath = path + "/" + localFilename;
+            }
+
         }
         std::ofstream MyFile;
         MyFile.open((filepath), std::ios::app);
@@ -251,7 +256,11 @@ int download::https() {
             std::string filenamenew = std::string(filename).substr(std::string(filename).find_last_of("/\\") + 1);
             checkfile(filenamenew);
             localFilename = filenamenew;
-            filepath = path + "/" + localFilename;
+            if (path.empty()) {
+                filepath = "./" + localFilename;
+            } else {
+                filepath = path + "/" + localFilename;
+            }
         }
         std::ofstream MyFile;
         MyFile.open((filepath), std::ios::app);
@@ -410,4 +419,8 @@ bool download::isStop() const {
 
 bool download::isDownloading() const {
     return downloading;
+}
+
+void download::setPriority(int priority) {
+    download::priority = priority;
 }

@@ -52,7 +52,9 @@ void console::listener() {
                 std::jthread th(&downloadHandler::pauseAll, dH);
                 th.detach();
             } else if (first == "manage") {
-                // dH->manageDownloadings();
+                dH->manageDownloadings();
+            } else if (first == "setPriority") {
+                dH->setPriority(std::stoi(elements.at(1)), std::stoi(command));
             }
         } else {
             std::cout << "Unsuported command" << std::endl;

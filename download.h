@@ -39,6 +39,8 @@ private:
 
 
 public:
+    void setPriority(int priority);
+
     std::string msg = "";
 
     bool isDownloading() const;
