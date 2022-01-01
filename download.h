@@ -7,15 +7,20 @@
 #include <string>
 #include <fstream>
 #include <boost/asio.hpp>
+#include <boost/asio/ssl.hpp>
 #include <thread>
 #include <stdlib.h>
 #include <filesystem>
+
 
 
 #ifndef SEMESTRALKA_POS_DOWNLOAD_H
 #define SEMESTRALKA_POS_DOWNLOAD_H
 
 using boost::asio::ip::tcp;
+namespace ssl = boost::asio::ssl;
+typedef ssl::stream<tcp::socket> ssl_socket;
+
 
 class download {
 private:
@@ -72,6 +77,8 @@ public:
     void setAProtocol(const std::string &aProtocol);
 
     int http();
+
+    int https();
 
     void setFilename(const std::string &filename);
 
