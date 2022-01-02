@@ -40,20 +40,22 @@ void jsonRead() {
 
 }
 
-void jsonWriteFile() {
+void jsonWrite() {
+    //potom to dorobit na parametre
 
-    file2 = json_object_new_object();
-    //json_object_array_add(files, file2);
+    struct json_object *file;
 
-    string nameN = "meno";
-    json_object_object_add(file2, "name", json_object_new_string(nameN.c_str()));
+    file = json_object_new_object();
 
-    int ageN = 20;
-    json_object_object_add(file2, "age", json_object_new_int(ageN));
+    json_object_object_add(file, "hostname", json_object_new_string("www.asd.sk"));
+    json_object_object_add(file, "filename", json_object_new_string("images/background.png"));
+    json_object_object_add(file, "localfilename", json_object_new_string("images/background.png"));
+    json_object_object_add(file, "path", json_object_new_string("cesta/asd"));
+    json_object_object_add(file, "size", json_object_new_int(55555));
+    json_object_object_add(file, "downloaded", json_object_new_int(12345));
+    json_object_object_add(file, "protocol", json_object_new_string("http"));
+    json_object_object_add(file, "priority", json_object_new_int(1));
 
-    string locationN = "location";
-    json_object_object_add(file2, "location", json_object_new_string(locationN.c_str()));
-
-    json_object_to_file("json-test.txt", file2);
+    json_object_to_file("json-test.txt", file);
 
 }

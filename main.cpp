@@ -4,6 +4,6 @@
 using namespace std;
 
 int main() {
-    jsonRead();
+    jsonWrite();
     return 0;
 }
