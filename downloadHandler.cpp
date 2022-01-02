@@ -129,6 +129,7 @@ int downloadHandler::findHighestNotDownloading() {
 
 void downloadHandler::listOfDownloads() {
     int i = 0;
+
     std::cout << std::setprecision(3);
     std::cout << "Number " << "Protocol " << "Hostname " << "Filename " << "LocalFileName " << "LocalPath "
               << "Finished " << "Progress " << "Size " << "Priority " << std::endl;

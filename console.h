@@ -26,6 +26,7 @@ private:
     };
     std::vector<std::string> customCommands{"download",
                                             "history",
+                                            "start",
                                             "pause",
                                             "resume",
                                             "stop",
@@ -37,24 +38,30 @@ private:
                                             "pauseAll",
                                             "stopAll",
                                             "manage",
-                                            "setPriority"
+                                            "setPriority",
+                                            "plan",
+                                            "schedule"
     };
     std::string space_delimiter = " ";
+    downloadHandler *dH;
+    bool exit;
 public:
     void listener();
     //void checkFinishedDownloads();
 
     const std::string &getPathtoDownload() const;
 
-    void setPathtoDownload(const std::string &pathtoDownload);
-
     void info();
 
-    void exitt(bool &exit);
+    void exitProgram();
 
     int resolveCommand(std::string input);
 
-    void makeConsoleCommand(std::string &command, std::string &input);
+    void makeConsoleCommand(std::string &input);
+
+    bool checkInput(std::vector<std::string> &v);
+
+    bool separateCommand(std::vector<std::string> &v, std::string &command);
 };
 
 

@@ -4,7 +4,8 @@
 
 #include "download.h"
 
-download::download(std::string pprotocol, std::string pfilename, std::string phostname, std::string ppath) {
+download::download(std::string pprotocol, std::string pfilename, std::string phostname, std::string ppath,
+                   int ppriority) {
     protocol = pprotocol;
     filename = pfilename;
     hostname = phostname;
@@ -12,7 +13,7 @@ download::download(std::string pprotocol, std::string pfilename, std::string pho
     size = 0;
     currentSize = 0;
     msg = "No";
-    priority = 0;
+    priority = ppriority;
     pause = false;
 
 }

@@ -79,7 +79,7 @@ public:
 
     void checkfile(std::string &filename);
 
-    download(std::string protocol, std::string filename, std::string hostname, std::string ppath);
+    download(std::string protocol, std::string filename, std::string hostname, std::string ppath, int priority);
 
     const std::string &getAProtocol() const;
 
