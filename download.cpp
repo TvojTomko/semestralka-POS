@@ -121,13 +121,13 @@ int download::http() {
         std::string header;
         while (std::getline(response_stream, header) && header != "\r") {
 
-            if (!resume) {
+            if (!resume || size == 0) {
                 if (header.find("Content-Length") != std::string::npos) {
                     setSize(std::stoi(header.substr(header.find(" "), header.size())));
                 }
             }
         }
-        if (!resume) {
+        if (!resume || filepath.empty() || localFilename.empty()) {
             std::string filenamenew = std::string(filename).substr(std::string(filename).find_last_of("/\\") + 1);
             checkfile(filenamenew);
             localFilename = filenamenew;
@@ -246,13 +246,13 @@ int download::https() {
         std::string header;
         while (std::getline(response_stream, header) && header != "\r") {
 
-            if (!resume) {
+            if (!resume || size == 0) {
                 if (header.find("Content-Length") != std::string::npos) {
                     setSize(std::stoi(header.substr(header.find(" "), header.size())));
                 }
             }
         }
-        if (!resume) {
+        if (!resume || filepath.empty() || localFilename.empty()) {
             std::string filenamenew = std::string(filename).substr(std::string(filename).find_last_of("/\\") + 1);
             checkfile(filenamenew);
             localFilename = filenamenew;
@@ -293,7 +293,10 @@ int download::https() {
         downloading = false;
     }
     catch (std::exception &e) {
-        std::cout << "Exception: " << e.what() << "\n";
+        setMsg("Yes");
+        downloading = false;
+        //std::cout << "Exception: " << e.what() << "\n";
+
     }
 
     return 0;

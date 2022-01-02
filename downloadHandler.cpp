@@ -11,6 +11,7 @@ downloadHandler::downloadHandler() {
 
 void downloadHandler::startDownloading(int i) {
     std::jthread th(&download::startDownload, downloads.at(i));
+    th.detach();
 }
 
 void downloadHandler::pauseDownloading(int i) {
@@ -69,15 +70,12 @@ void downloadHandler::consume() {
                 th.detach();
                 //  std::cout << "somConsume stahujem " << data << std::endl;
                 downloadingIndex.push_back(data);
-            } else if (lowest != -1 && downloads.at(lowest)->getPriority() < downloads.at(data)->getPriority() &&
-                       downloading < maxDownloading) {
+            } else if (lowest != -1 && downloads.at(lowest)->getPriority() < downloads.at(data)->getPriority()) {
                 //higher priority
                 downloads.at(lowest)->pauseDownload();
                 downloadingIndex.push_back(data);
                 downloadingIndex.erase(std::remove(downloadingIndex.begin(), downloadingIndex.end(), lowest),
                                        downloadingIndex.end());
-                std::cout << "somConsume zastavujem  " << lowest << std::endl;
-                std::cout << "somConsume stahujem " << data << std::endl;
                 std::jthread th(&download::startDownload, downloads.at(data));
                 th.detach();
             }
@@ -89,8 +87,8 @@ void downloadHandler::consume() {
 
 void downloadHandler::findNumberOfDownloading() {
     int temp = 0;
-    for (int i = 0; i < downloads.size(); i++) {
-        if (downloads.at(i)->isDownloading()) {
+    for (auto d: downloads) {
+        if (d->isDownloading()) {
             temp++;
         }
     }
@@ -100,11 +98,13 @@ void downloadHandler::findNumberOfDownloading() {
 int downloadHandler::findLowestDownloading() {
     int lowest = INT_MAX;
     int index = -1;
-    for (int i = 0; i < downloads.size(); i++) {
-        if (downloads.at(i)->getPriority() < lowest && downloads.at(i)->isDownloading()) {
+    int i = 0;
+    for (auto d: downloads) {
+        if (d->getPriority() < lowest && d->isDownloading()) {
             index = i;
-            lowest = downloads.at(i)->getPriority();
+            lowest = d->getPriority();
         }
+        i++;
     }
     return index;
 }
@@ -112,12 +112,17 @@ int downloadHandler::findLowestDownloading() {
 int downloadHandler::findHighestNotDownloading() {
     int highest = -1;
     int index = -1;
-    for (int i = 0; i < downloads.size(); i++) {
-        if (downloads.at(i)->getPriority() > highest && !downloads.at(i)->isDownloading() &&
-            downloads.at(i)->getMsg() != "Yes") {
+    int i = 0;
+    for (auto d: downloads) {
+        if (d->getPriority() > highest &&
+            !d->isDownloading() &&
+            d->getMsg() != "Yes" &&
+            d->getMsg() != "STOP") {
             index = i;
-            highest = downloads.at(i)->getPriority();
+            highest = d->getPriority();
+
         }
+        i++;
     }
     return index;
 }
@@ -127,37 +132,59 @@ void downloadHandler::listOfDownloads() {
     std::cout << std::setprecision(3);
     std::cout << "Number " << "Protocol " << "Hostname " << "Filename " << "LocalFileName " << "LocalPath "
               << "Finished " << "Progress " << "Size " << "Priority " << std::endl;
-    while (i < downloads.size()) {
-        std::cout << i << ". " << downloads.at(i)->getAProtocol() << " " << downloads.at(i)->getHostname() << " "
-                  << downloads.at(i)->getFilename() << " " << downloads.at(i)->getLocalFilename() << " ";
-        if (downloads.at(i)->getPath().empty()) {
+    for (auto d: downloads) {
+        std::cout << i << ". " << d->getAProtocol() << " " << d->getHostname() << " "
+                  << d->getFilename() << " " << d->getLocalFilename() << " ";
+        if (d->getPath().empty()) {
             std::cout << "default ";
         } else {
-            std::cout << downloads.at(i)->getFilepath() << " ";
+            std::cout << d->getFilepath() << " ";
         }
-        std::cout << downloads.at(i)->getMsg() << " " << downloads.at(i)->progress() << "% "
-                  << downloads.at(i)->getSize() << " " << downloads.at(i)->getPriority() << std::endl;
+        std::cout << d->getMsg() << " " << d->progress() << "% "
+                  << d->getSize() << " " << d->getPriority() << std::endl;
         i++;
     }
 }
 
 void downloadHandler::startAll() {
-    for (int i = 0; i < downloads.size(); ++i) {
-        std::jthread th(&download::startDownload, downloads.at(i));
+    for (auto d: downloads) {
+        std::jthread th(&download::startDownload, d);
         th.detach();
     }
 }
 
 void downloadHandler::pauseAll() {
-    for (int i = 0; i < downloads.size(); ++i) {
-        downloads.at(i)->pauseDownload();
+    for (auto d: downloads) {
+        d->pauseDownload();
     }
 }
 
 void downloadHandler::exitProgram() {
     exit = true;
+    deleteAll();
 }
 
 void downloadHandler::setPriority(int d, int p) {
     downloads.at(d)->setPriority(p);
+}
+
+void downloadHandler::deleteAll() {
+    for (auto d: downloads) {
+        delete d;
+    }
+    downloads.clear();
+}
+
+void downloadHandler::stopAll() {
+    for (auto d: downloads) {
+        d->stopDownload();
+    }
+}
+
+void downloadHandler::resumeAll() {
+    for (auto d: downloads) {
+        if (d->getMsg() == "PAUSED") {
+            d->resumeDownload();
+        }
+    }
 }

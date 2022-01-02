@@ -41,7 +41,8 @@ void console::listener() {
                 std::cout << "To exit the program type exit" << std::endl;
             } else if (first == "exit") {
                 exitt(exit);
-                dH->pauseAll();
+                dH->exitProgram();
+                delete dH;
             } else if (first == "info") {
                 std::jthread th(&downloadHandler::listOfDownloads, dH);
                 th.detach();
@@ -50,6 +51,12 @@ void console::listener() {
                 th.detach();
             } else if (first == "pauseAll") {
                 std::jthread th(&downloadHandler::pauseAll, dH);
+                th.detach();
+            } else if (first == "stopAll") {
+                std::jthread th(&downloadHandler::stopAll, dH);
+                th.detach();
+            } else if (first == "resumeAll") {
+                std::jthread th(&downloadHandler::resumeAll, dH);
                 th.detach();
             } else if (first == "manage") {
                 dH->manageDownloadings();
@@ -63,18 +70,6 @@ void console::listener() {
 
     }
 }
-
-/*
-bool IsMarkedToDelete(const download* o)
-{
-    return o->msg=="je";
-}
-void console::checkFinishedDownloads() {
-    downloads.erase(
-            std::remove_if(downloads.begin(), downloads.end(), IsMarkedToDelete),
-            downloads.end());
-}*/
-
 
 const std::string &console::getPathtoDownload() const {
     return pathtoDownload;

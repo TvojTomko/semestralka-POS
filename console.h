@@ -35,6 +35,7 @@ private:
                                             "info",
                                             "startAll",
                                             "pauseAll",
+                                            "stopAll",
                                             "manage",
                                             "setPriority"
     };

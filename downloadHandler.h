@@ -31,6 +31,8 @@ private:
 public:
     downloadHandler();
 
+    void deleteAll();
+
     void startDownloading(int i);
 
     void stopDownloading(int i);
@@ -48,6 +50,10 @@ public:
     void startAll();
 
     void pauseAll();
+
+    void stopAll();
+
+    void resumeAll();
 
     void exitProgram();
 
