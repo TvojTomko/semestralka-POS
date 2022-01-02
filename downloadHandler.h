@@ -26,6 +26,7 @@ private:
     bool ready = false;
     int data;
     std::vector<int> downloadingIndex;
+    bool manage;
 
 
 public:
@@ -69,7 +70,9 @@ public:
 
     void setPriority(int d, int p);
 
+    int getNumberOdDownloads();
 
+    bool isManage() const;
 };
 
 

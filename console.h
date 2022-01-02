@@ -5,8 +5,8 @@
 #include <iostream>
 #include <vector>
 #include <algorithm>
-#include <stdio.h>
-#include <stdlib.h>
+#include <cstdio>
+#include <cstdlib>
 #include <thread>
 #include "download.h"
 #include "downloadHandler.h"
@@ -17,7 +17,7 @@
 
 class console {
 private:
-    std::string pathtoDownload;
+    std::string pathToDownload;
     std::vector<std::string> bashCommands{"ls",
                                           "mkdir",
                                           "rmdir",
@@ -30,7 +30,7 @@ private:
                                             "pause",
                                             "resume",
                                             "stop",
-                                            "setpath",
+                                            "setPath",
                                             "help",
                                             "exit",
                                             "info",
@@ -42,14 +42,16 @@ private:
                                             "plan",
                                             "schedule"
     };
+    std::vector<std::string> protocols{"http",
+                                       "https",
+                                       "ftp",
+                                       "ftps"
+    };
     std::string space_delimiter = " ";
     downloadHandler *dH;
     bool exit;
 public:
     void listener();
-    //void checkFinishedDownloads();
-
-    const std::string &getPathtoDownload() const;
 
     void info();
 
@@ -62,6 +64,8 @@ public:
     bool checkInput(std::vector<std::string> &v);
 
     bool separateCommand(std::vector<std::string> &v, std::string &command);
+
+    bool is_number(const std::string &s);
 };
 
 

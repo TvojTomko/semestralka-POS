@@ -10,21 +10,29 @@ downloadHandler::downloadHandler() {
 }
 
 void downloadHandler::startDownloading(int i) {
-    std::jthread th(&download::startDownload, downloads.at(i));
-    th.detach();
+    if (downloads.at(i)->getCurrentSize() == 0) {
+        std::jthread th(&download::startDownload, downloads.at(i));
+        th.detach();
+    }
 }
 
 void downloadHandler::pauseDownloading(int i) {
-    downloads.at(i)->pauseDownload();
+    if (!(downloads.at(i)->msg == "Yes" || downloads.at(i)->msg == "STOP" || downloads.at(i)->msg == "PAUSE")) {
+        downloads.at(i)->pauseDownload();
+    }
 }
 
 void downloadHandler::resumeDownloading(int i) {
-    std::jthread th(&download::resumeDownload, downloads.at(i));
-    th.detach();
+    if (downloads.at(i)->getMsg() == "PAUSED") {
+        std::jthread th(&download::resumeDownload, downloads.at(i));
+        th.detach();
+    }
 }
 
 void downloadHandler::stopDownloading(int i) {
-    downloads.at(i)->stopDownload();
+    if (!(downloads.at(i)->msg == "Yes" || downloads.at(i)->msg == "STOP")) {
+        downloads.at(i)->stopDownload();
+    }
 }
 
 void downloadHandler::addDownload(download *d) {
@@ -34,13 +42,13 @@ void downloadHandler::addDownload(download *d) {
 //Producent vzdy najde 1 download s najvyssiou prioritou ktory sa este nestahuje
 //Konzument ked Producent najde download s najvyssiou prioritou skontroluje ci je vyssia ako aktualnhe stahovane ak ano tak pausne stahovanie s najnizsiou prioritou a zacne stahovat dany subor
 void downloadHandler::manageDownloadings() {
+    manage = true;
     std::jthread th(&downloadHandler::produce, this);
     th.detach();
     std::jthread th1(&downloadHandler::consume, this);
     th1.detach();
     sConsume.release();
 }
-
 
 void downloadHandler::produce() {
     while (!exit) {
@@ -149,14 +157,18 @@ void downloadHandler::listOfDownloads() {
 
 void downloadHandler::startAll() {
     for (auto d: downloads) {
-        std::jthread th(&download::startDownload, d);
-        th.detach();
+        if (d->getCurrentSize() == 0) {
+            std::jthread th(&download::startDownload, d);
+            th.detach();
+        }
     }
 }
 
 void downloadHandler::pauseAll() {
     for (auto d: downloads) {
-        d->pauseDownload();
+        if (!(d->msg == "Yes" || d->msg == "STOP" || d->msg == "PAUSE")) {
+            d->pauseDownload();
+        }
     }
 }
 
@@ -178,14 +190,26 @@ void downloadHandler::deleteAll() {
 
 void downloadHandler::stopAll() {
     for (auto d: downloads) {
-        d->stopDownload();
+        if (!(d->msg == "Yes" || d->msg == "STOP")) {
+            d->stopDownload();
+        }
+
     }
 }
 
 void downloadHandler::resumeAll() {
     for (auto d: downloads) {
         if (d->getMsg() == "PAUSED") {
-            d->resumeDownload();
+            std::jthread th(&download::resumeDownload, d);
+            th.detach();
         }
     }
+}
+
+int downloadHandler::getNumberOdDownloads() {
+    return downloads.size();
+}
+
+bool downloadHandler::isManage() const {
+    return manage;
 }
