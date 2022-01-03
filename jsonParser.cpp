@@ -16,7 +16,7 @@ void jsonRead() {
     struct json_object *parsed_json;
     struct json_object *fileContent;
 
-    fp = fopen("json-test.txt", "r");
+    fp = fopen("json-test.json", "r");
     fread(buffer, 1024, 1, fp);
     fclose(fp);
 
@@ -41,9 +41,11 @@ void jsonWrite() {
     struct json_object *parsedjson;
     struct json_object *array;
 
+    struct json_object *current;
+
     array = json_object_new_array();
 
-    fp = fopen("json-test.txt", "r");
+    fp = fopen("json-test.json", "r");
     fread(buffer, 1024, 1, fp);
     fclose(fp);
 
@@ -63,13 +65,13 @@ void jsonWrite() {
     json_object_array_add(array, parsedjson);
     json_object_array_add(array, file);
 
-    json_object_object_add(array,"file", file);
+    //json_object_object_add(array,"file", file);
 
     //json_object_object_add(parsedjson, "file", file);
 
     json_object_to_file("currentdownload.json", file);
 
-    json_object_to_file("json-test.txt", array);
+    json_object_to_file("json-test.json", array);
 }
 
 void jsonDelete() {
@@ -82,7 +84,7 @@ void jsonDelete() {
     parsedjson = json_tokener_parse(buffer);
 }
 
-struct json_object * currentJson() {
+static struct json_object * currentJson() {
     struct json_object *current;
     struct json_object *parsedjson;
 

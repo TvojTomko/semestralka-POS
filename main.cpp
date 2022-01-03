@@ -5,6 +5,6 @@ using namespace std;
 
 int main() {
     jsonWrite();
-    //jsonRead();
+    jsonRead();
     return 0;
 }
