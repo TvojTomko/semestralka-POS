@@ -3,6 +3,13 @@
 
 #include "jsonParser.h"
 
+/*
+ * TO DO:
+ *      classu parser
+ *      novy json subor planovac + jeho funkcie
+ *      metoda na vytahovanie info z json-u
+ */
+
 using namespace std;
 
 FILE *fp;
@@ -28,9 +35,8 @@ void jsonRead() {
 
     for (int i = 0; i < filesNum; i++) {
         fileContent = json_object_array_get_idx(files, i);
-        //cout << "Object " << (i)+1 << ": " << json_object_get_string(fileContent) << endl;
 
-        //cout << "Object " << (i)+1 << ": " << json_object_to_json_string_ext(fileContent,JSON_C_TO_STRING_SPACED | JSON_C_TO_STRING_PRETTY) << endl;
+        cout << "Reading json... " << endl << json_object_to_json_string_ext(fileContent,JSON_C_TO_STRING_SPACED | JSON_C_TO_STRING_PRETTY) << endl;
     }
 
 }
@@ -64,7 +70,6 @@ void jsonWrite() {
 }
 
 void jsonDelete() {
-    //treba dokoncit
     struct json_object *parsedjson;
     struct json_object *key;
 
