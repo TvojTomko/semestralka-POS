@@ -1,6 +1,10 @@
 #include <iostream>
+#include "jsonParser.h"
+
+using namespace std;
 
 int main() {
-    std::cout << "Hello, World!" << std::endl;
+    jsonWrite();
+    //jsonRead();
     return 0;
 }
