@@ -31,6 +31,8 @@ void jsonRead() {
         fileContent = json_object_array_get_idx(files, i);
         //json_object_ob
         cout << "Object " << (i)+1 << ": " << json_object_get_string(fileContent) << endl;
+
+        cout << "Object " << (i)+1 << ": " << json_object_to_json_string_ext(fileContent,JSON_C_TO_STRING_SPACED | JSON_C_TO_STRING_PRETTY) << endl;
     }
 
 }
@@ -42,6 +44,7 @@ void jsonWrite() {
     struct json_object *array;
 
     struct json_object *current;
+
 
     array = json_object_new_array();
 
@@ -67,14 +70,15 @@ void jsonWrite() {
 
     //json_object_object_add(array,"file", file);
 
-    //json_object_object_add(parsedjson, "file", file);
+    json_object_object_add(parsedjson, "file", file);
 
-    json_object_to_file("currentdownload.json", file);
+    json_object_to_file_ext("currentdownload.json", file, JSON_C_TO_STRING_SPACED | JSON_C_TO_STRING_PRETTY);
 
-    json_object_to_file("json-test.json", array);
+    json_object_to_file_ext("json-test.json", parsedjson, JSON_C_TO_STRING_SPACED | JSON_C_TO_STRING_PRETTY);
 }
 
 void jsonDelete() {
+    //treba dokoncit
     struct json_object *parsedjson;
 
     fp = fopen("json-test.txt", "r");
@@ -84,7 +88,7 @@ void jsonDelete() {
     parsedjson = json_tokener_parse(buffer);
 }
 
-static struct json_object * currentJson() {
+static json_object *currentJson() {
     struct json_object *current;
     struct json_object *parsedjson;
 
