@@ -76,5 +76,18 @@ void jsonDelete() {
 
     json_object_object_del(parsedjson, "file");
 
-    cout << "skuska" << json_object_object_get_ex(parsedjson, "file", &key);
+    json_object_to_file_ext("json-test.json", parsedjson, JSON_C_TO_STRING_SPACED | JSON_C_TO_STRING_PRETTY);
+
+}
+
+static struct json_object * parsedJson() {
+    struct json_object *pj;
+
+    fp = fopen("json-test.json", "r");
+    fread(buffer, 1024, 1, fp);
+    fclose(fp);
+
+    pj = json_tokener_parse(buffer);
+
+    return pj;
 }
