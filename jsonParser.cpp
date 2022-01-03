@@ -1,6 +1,5 @@
 #include <json-c/json.h>
 #include <iostream>
-#include <fstream>
 
 #include "jsonParser.h"
 
@@ -29,24 +28,16 @@ void jsonRead() {
 
     for (int i = 0; i < filesNum; i++) {
         fileContent = json_object_array_get_idx(files, i);
-        //json_object_ob
-        cout << "Object " << (i)+1 << ": " << json_object_get_string(fileContent) << endl;
+        //cout << "Object " << (i)+1 << ": " << json_object_get_string(fileContent) << endl;
 
-        cout << "Object " << (i)+1 << ": " << json_object_to_json_string_ext(fileContent,JSON_C_TO_STRING_SPACED | JSON_C_TO_STRING_PRETTY) << endl;
+        //cout << "Object " << (i)+1 << ": " << json_object_to_json_string_ext(fileContent,JSON_C_TO_STRING_SPACED | JSON_C_TO_STRING_PRETTY) << endl;
     }
 
 }
 
 void jsonWrite() {
-    //potom to dorobit na parametre
     struct json_object *file;
     struct json_object *parsedjson;
-    struct json_object *array;
-
-    struct json_object *current;
-
-
-    array = json_object_new_array();
 
     fp = fopen("json-test.json", "r");
     fread(buffer, 1024, 1, fp);
@@ -65,11 +56,6 @@ void jsonWrite() {
     json_object_object_add(file, "protocol", json_object_new_string("https"));
     json_object_object_add(file, "priority", json_object_new_int(1));
 
-    json_object_array_add(array, parsedjson);
-    json_object_array_add(array, file);
-
-    //json_object_object_add(array,"file", file);
-
     json_object_object_add(parsedjson, "file", file);
 
     json_object_to_file_ext("currentdownload.json", file, JSON_C_TO_STRING_SPACED | JSON_C_TO_STRING_PRETTY);
@@ -80,27 +66,15 @@ void jsonWrite() {
 void jsonDelete() {
     //treba dokoncit
     struct json_object *parsedjson;
+    struct json_object *key;
 
-    fp = fopen("json-test.txt", "r");
-    fread(buffer, 1024, 1, fp);
-    fclose(fp);
-
-    parsedjson = json_tokener_parse(buffer);
-}
-
-static json_object *currentJson() {
-    struct json_object *current;
-    struct json_object *parsedjson;
-
-    fp = fopen("json-test.txt", "r");
+    fp = fopen("json-test.json", "r");
     fread(buffer, 1024, 1, fp);
     fclose(fp);
 
     parsedjson = json_tokener_parse(buffer);
 
-    current = json_object_new_object();
+    json_object_object_del(parsedjson, "file");
 
-    json_object_object_add(current, "history", parsedjson);
-
-    return current;
+    cout << "skuska" << json_object_object_get_ex(parsedjson, "file", &key);
 }
