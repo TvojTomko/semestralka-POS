@@ -62,7 +62,7 @@ void jsonWrite() {
     //json_object_object_add(file, "path", json_object_new_string("cesta/asd"));
     //json_object_object_add(file, "size", json_object_new_int(55555));
     //json_object_object_add(file, "downloaded", json_object_new_int(12345));
-    json_object_object_add(file, "protocol", json_object_new_string("http"));
+    json_object_object_add(file, "protocol", json_object_new_string("https"));
     json_object_object_add(file, "priority", json_object_new_int(1));
 
     json_object_array_add(array, parsedjson);
