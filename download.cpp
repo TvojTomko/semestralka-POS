@@ -28,6 +28,8 @@ void download::startDownload() {
         http();
     } else if (protocol == "https") {
         https();
+    } else if (protocol == "ftp") {
+        ftp();
     }
 }
 
@@ -66,10 +68,6 @@ void download::stopDownload() {
 
 int download::http() {
     try {
-        if (hostname.empty() || filename.empty()) {
-            std::cout << "not enough arguments\n";
-            return 1;
-        }
         boost::asio::io_context io_context;
 
         // Get a list of endpoints corresponding to the server name.
@@ -179,10 +177,6 @@ int download::http() {
 
 int download::https() {
     try {
-        if (hostname.empty() || filename.empty()) {
-            std::cout << "not enough arguments\n";
-            return 1;
-        }
         boost::asio::io_service io_service;
         // Create a context that uses the default paths for
         // finding CA certificates.
@@ -298,6 +292,154 @@ int download::https() {
         downloading = false;
         //std::cout << "Exception: " << e.what() << "\n";
 
+    }
+
+    return 0;
+
+}
+
+int download::ftp() {
+    try {
+        boost::asio::io_service io_service;
+
+        tcp::resolver time_server_resolver(io_service);
+
+        tcp::resolver::query query(hostname, "ftp");
+
+        tcp::resolver::iterator endpoint_iterator = time_server_resolver.resolve(query);
+        tcp::resolver::iterator end;
+
+        tcp::socket socket(io_service);
+
+        boost::system::error_code error = boost::asio::error::host_not_found;
+
+        while (error && endpoint_iterator != end) {
+            socket.close();
+            socket.connect(*endpoint_iterator++, error);;
+        }
+        if (error) {
+            throw boost::system::system_error(error);
+        }
+        boost::asio::streambuf request;
+        boost::asio::streambuf response;
+        //std::string strLine;
+        std::ostream request_stream(&request);
+        std::istream response_stream(&response);
+
+        std::string strResult;
+
+        request_stream << "USER demo" << "\r\n";
+        boost::asio::write(socket, request);
+        boost::asio::read_until(socket, response, "\r\n");
+        std::getline(response_stream, strResult);
+        std::cout << strResult << std::endl;
+        if (getRetCode(strResult) == 220) {
+            // strResult.clear();
+            boost::asio::read_until(socket, response, "\r\n");
+            std::getline(response_stream, strResult);
+            std::cout << strResult << std::endl;
+
+        }
+
+        request_stream << "PASS password" << "\r\n";
+        boost::asio::write(socket, request);
+        boost::asio::read_until(socket, response, "\r\n");
+        std::getline(response_stream, strResult);
+        std::cout << strResult << std::endl;
+
+        request_stream << "TYPE I" << "\r\n";
+        boost::asio::write(socket, request);
+        boost::asio::read_until(socket, response, "\r\n");
+        std::getline(response_stream, strResult);
+        std::cout << strResult << std::endl;
+
+        request_stream << "PASV" << "\r\n";
+        boost::asio::write(socket, request);
+        boost::asio::read_until(socket, response, "\r\n");
+        std::getline(response_stream, strResult);
+        std::cout << strResult << std::endl;
+
+        std::string strPort = getHostAndPort(strResult);
+
+        request_stream << "SIZE " << filename << "\r\n";
+        boost::asio::write(socket, request);
+        boost::asio::read_until(socket, response, "\r\n");
+        std::getline(response_stream, strResult);
+        std::cout << strResult << std::endl;
+        size = std::stoi(strResult.substr(strResult.find_first_of(" "), strResult.length() - 1));
+        //std::cout << size << std::endl;
+
+        if (resume) {
+            request_stream << "REST " << std::to_string((int) currentSize) << "\r\n";
+            boost::asio::write(socket, request);
+        }
+
+        request_stream << "RETR " << filename << "\r\n";
+        boost::asio::write(socket, request);
+
+        tcp::socket data_socket(io_service);
+        tcp::resolver::query data_query(hostname, strPort);
+
+        tcp::resolver::iterator data_endpoint_iterator = time_server_resolver.resolve(data_query);
+        error = boost::asio::error::host_not_found;
+
+        if (error && data_endpoint_iterator != end) {
+            data_socket.close();
+            data_socket.connect(*data_endpoint_iterator++, error);
+        }
+        if (error) {
+            throw boost::system::system_error(error);
+        }
+
+        boost::asio::streambuf responseData;
+        boost::system::error_code errorData;
+
+        if (!resume || filepath.empty() || localFilename.empty()) {
+            std::string filenamenew = std::string(filename).substr(std::string(filename).find_last_of("/\\") + 1);
+            checkfile(filenamenew);
+            localFilename = filenamenew;
+            if (path.empty()) {
+                filepath = "./" + localFilename;
+            } else {
+                filepath = path + "/" + localFilename;
+            }
+
+        }
+        std::ofstream MyFile;
+        MyFile.open((filepath), std::ios::app);
+
+        // Write whatever content we already have to output.
+        int size = currentSize;
+        if (responseData.size() > 0) {
+            size += responseData.size();
+            MyFile << &responseData;
+
+        }
+
+        while (boost::asio::read(data_socket, responseData,
+                                 boost::asio::transfer_at_least(1), errorData)) {
+            size += responseData.size();
+            MyFile << &responseData;
+            currentSize = size;
+            if (pause) {
+                MyFile.close();
+                return 0;
+            }
+        }
+
+        if (errorData != boost::asio::error::eof) {
+            throw boost::system::error_code(errorData);
+        }
+
+        MyFile.close();
+        setMsg("Yes");
+        downloading = false;
+        return 0;
+
+
+    }
+    catch (std::exception &e) {
+        std::cout << "Exception: " << e.what() << "\n";
     }
 
     return 0;
@@ -428,3 +570,41 @@ bool download::isDownloading() const {
 void download::setPriority(int priority) {
     download::priority = priority;
 }
+
+int download::getRetCode(const std::string &stringLine) {
+    //std::cout << "som tu " << stringLine << std::endl;
+    if (stringLine.size() < 3) {
+        return -1;
+    }
+    size_t nPos = stringLine.find_first_of(" ");
+    std::stringstream stream;
+    std::string strCode = stringLine.substr(0, nPos);
+    int nRetCode = std::stoi(strCode);
+    //std::cout << "som tu code je " << nRetCode << std::endl;
+    return nRetCode;
+}
+
+
+std::string download::getHostAndPort(std::string &strResult) {
+    size_t nBegin = strResult.find("(");
+    size_t nEnd = strResult.find(")");
+
+    if (nBegin == -1 || nEnd == -1)
+        return "";
+
+    std::string strHost = strResult.substr(nBegin + 1, nEnd - nBegin - 1);
+    nBegin = strHost.find_last_of(",");
+    std::string strPort = strHost.substr(nBegin + 1, nEnd - nBegin + 1);
+    int nPort = 0, tmp = 0;
+
+    tmp = boost::lexical_cast<int>(strPort);
+    strHost = strHost.substr(0, nBegin);
+
+    nBegin = strHost.find_last_of(",");
+    strPort = strHost.substr(nBegin + 1, nEnd - nBegin + 1);
+    nPort = boost::lexical_cast<int>(strPort);
+    nPort = 256 * nPort + tmp;
+    strPort = boost::lexical_cast<std::string>(nPort);
+    return strPort;
+}
+

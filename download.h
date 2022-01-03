@@ -8,6 +8,7 @@
 #include <fstream>
 #include <boost/asio.hpp>
 #include <boost/asio/ssl.hpp>
+#include <boost/lexical_cast.hpp>
 #include <thread>
 #include <stdlib.h>
 #include <filesystem>
@@ -89,6 +90,8 @@ public:
 
     int https();
 
+    int ftp();
+
     void setFilename(const std::string &filename);
 
     void setHostname(const std::string &hostname);
@@ -104,6 +107,10 @@ public:
     long long int getSize() const;
 
     long long int getCurrentSize() const;
+
+    int getRetCode(const std::string &stringLine);
+
+    std::string getHostAndPort(std::string &strResult);
 
 };
 
