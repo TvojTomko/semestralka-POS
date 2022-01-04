@@ -5,8 +5,11 @@ using namespace std;
 
 int main() {
     jsonWrite();
-    jsonRead();
 
     jsonDelete();
+
+    jsonRead();
+
+    jsonGetInfo();
     return 0;
 }
