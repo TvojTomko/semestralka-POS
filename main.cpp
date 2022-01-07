@@ -4,14 +4,14 @@
 using namespace std;
 
 int main() {
-    //jsonWrite();
+    jsonWrite();
+    jsonWrite();
 
-    //jsonDelete();
+    jsonDelete("file3");
 
-    //jsonReadAll();
+    jsonGetInfo("file1");
 
-    jsonGetInfo("file", 1);
-
+    jsonReadAll();
 
     exitProgram();
     return 0;

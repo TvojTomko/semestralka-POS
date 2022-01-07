@@ -3,8 +3,8 @@
 
 void jsonReadAll();
 void jsonWrite();
-void jsonDelete();
-void jsonGetInfo(std::string fn, int key);
+void jsonDelete(std::string fn);
+void jsonGetInfo(std::string fn);
 void exitProgram();
 
 #endif //SEMESTRALKA_JSONPARSER_H

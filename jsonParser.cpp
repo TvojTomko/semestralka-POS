@@ -15,10 +15,9 @@ FILE *fp;
 char buffer[1024];
 size_t filesNum;
 
-struct json_object *parsedjson;
 struct json_object *file;
 
-struct json_object *files;
+//struct json_object *files;
 struct json_object *fileContent;
 
 struct json_object *hostname;
@@ -30,16 +29,17 @@ struct json_object *downloaded;
 struct json_object *protocol;
 struct json_object *priority;
 
+
 void jsonReadAll() {
+    struct json_object *files;
 
     fp = fopen("json-test.json", "r");
     fread(buffer, 1024, 1, fp);
     fclose(fp);
 
-    parsedjson = json_tokener_parse(buffer);
 
     files = json_object_new_array();
-    json_object_array_add(files, parsedjson);
+    json_object_array_add(files, json_tokener_parse(buffer));
 
     filesNum = json_object_array_length(files);
 
@@ -49,17 +49,20 @@ void jsonReadAll() {
         cout << "Reading json... " << endl << json_object_to_json_string_ext(fileContent,JSON_C_TO_STRING_SPACED | JSON_C_TO_STRING_PRETTY) << endl;
     }
 
+    json_object_put(files);
 }
 
 void jsonWrite() {
+    struct json_object *object;
 
     fp = fopen("json-test.json", "r");
     fread(buffer, 1024, 1, fp);
     fclose(fp);
 
-    parsedjson = json_tokener_parse(buffer);
+    object = json_tokener_parse(buffer);
 
     file = json_object_new_object();
+
 
     json_object_object_add(file, "hostname", json_object_new_string("www.das.sk"));
     json_object_object_add(file, "filename", json_object_new_string("images/background.png"));
@@ -70,29 +73,34 @@ void jsonWrite() {
     json_object_object_add(file, "protocol", json_object_new_string("httpss"));
     json_object_object_add(file, "priority", json_object_new_string("1"));
 
-    json_object_object_add(parsedjson, "file2", file);
+
+    json_object_object_add(object, "file3", file);
 
     json_object_to_file_ext("currentdownload.json", file, JSON_C_TO_STRING_SPACED | JSON_C_TO_STRING_PRETTY);
 
-    json_object_to_file_ext("json-test.json", parsedjson, JSON_C_TO_STRING_SPACED | JSON_C_TO_STRING_PRETTY);
+    json_object_to_file_ext("json-test.json", object, JSON_C_TO_STRING_SPACED | JSON_C_TO_STRING_PRETTY);
 
+    json_object_put(object);
 }
 
-void jsonDelete() {
+void jsonDelete(string fn) {
+    struct json_object *object;
 
     fp = fopen("json-test.json", "r");
     fread(buffer, 1024, 1, fp);
     fclose(fp);
 
-    parsedjson = json_tokener_parse(buffer);
+    object = json_tokener_parse(buffer);
 
-    json_object_object_del(parsedjson, "file");
+    json_object_object_del(object, fn.c_str());
 
-    json_object_to_file_ext("json-test.json", parsedjson, JSON_C_TO_STRING_SPACED | JSON_C_TO_STRING_PRETTY);
+    json_object_to_file_ext("json-test.json", object, JSON_C_TO_STRING_SPACED | JSON_C_TO_STRING_PRETTY);
 
+    json_object_put(object);
 }
 
-void jsonGetInfo(string fn, int key) {
+void jsonGetInfo(string fn) {
+    struct json_object *object;
 
     string final;
 
@@ -100,9 +108,9 @@ void jsonGetInfo(string fn, int key) {
     fread(buffer, 1024, 1, fp);
     fclose(fp);
 
-    parsedjson = json_tokener_parse(buffer);
+    object = json_tokener_parse(buffer);
 
-    json_object_object_get_ex(parsedjson, fn.c_str(), &file);
+    json_object_object_get_ex(object, fn.c_str(), &file);
 
     cout << json_object_to_json_string_ext(file, JSON_C_TO_STRING_SPACED | JSON_C_TO_STRING_PRETTY) << endl;
 
@@ -114,7 +122,6 @@ void jsonGetInfo(string fn, int key) {
     json_object_object_get_ex(file, "downloaded", &downloaded);
     json_object_object_get_ex(file, "protocol", &protocol);
     json_object_object_get_ex(file, "priority", &priority);
-
 
     final += json_object_get_string(hostname);
     final += " ";
@@ -131,7 +138,6 @@ void jsonGetInfo(string fn, int key) {
     final += json_object_get_string(protocol);
     final += " ";
     final += json_object_get_string(priority);
-
 
     /*
     switch (key) {
@@ -162,29 +168,13 @@ void jsonGetInfo(string fn, int key) {
     }
     */
 
-    cout << final;
+    cout << final << endl;
 
-    /*
-    json_object_put(file);
+    json_object_put(object);
 
-    json_object_put(parsedjson);
-    */
 }
 
 void exitProgram() {
-
-    /*
-    json_object_put(hostname);
-    json_object_put(filename);
-    json_object_put(localfilename);
-    json_object_put(path);
-    json_object_put(size);
-    json_object_put(downloaded);
-    json_object_put(protocol);
-    json_object_put(priority);
-    */
-
-
 
     json_object_free_userdata(hostname, hostname);
     json_object_free_userdata(filename, filename);
@@ -195,7 +185,8 @@ void exitProgram() {
     json_object_free_userdata(protocol, protocol);
     json_object_free_userdata(priority, priority);
 
-    json_object_free_userdata(files, files);
+    //json_object_free_userdata(files, files);
     json_object_free_userdata(fileContent, fileContent);
 
+    json_object_free_userdata(file, file);
 }
