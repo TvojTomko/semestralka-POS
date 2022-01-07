@@ -17,7 +17,6 @@ size_t filesNum;
 
 struct json_object *file;
 
-//struct json_object *files;
 struct json_object *fileContent;
 
 struct json_object *hostname;
@@ -52,6 +51,24 @@ void jsonReadAll() {
     json_object_put(files);
 }
 
+void readHeaders() {
+    /*
+    struct json_object *parsed_json;
+    struct json_object *object;
+
+    fp = fopen("json-test.json", "r");
+    fread(buffer, 1024, 1, fp);
+    fclose(fp);
+
+    parsed_json = json_tokener_parse(buffer);
+
+    object = json_object_get(parsed_json);
+
+     json_object_put(parsed_json);
+     json_object_put(object);
+    */
+}
+
 void jsonWrite() {
     struct json_object *object;
 
@@ -63,7 +80,6 @@ void jsonWrite() {
 
     file = json_object_new_object();
 
-
     json_object_object_add(file, "hostname", json_object_new_string("www.das.sk"));
     json_object_object_add(file, "filename", json_object_new_string("images/background.png"));
     json_object_object_add(file, "localfilename", json_object_new_string("images/background.png"));
@@ -72,7 +88,6 @@ void jsonWrite() {
     json_object_object_add(file, "downloaded", json_object_new_string("12345"));
     json_object_object_add(file, "protocol", json_object_new_string("httpss"));
     json_object_object_add(file, "priority", json_object_new_string("1"));
-
 
     json_object_object_add(object, "file3", file);
 
@@ -186,7 +201,7 @@ void exitProgram() {
     json_object_free_userdata(priority, priority);
 
     //json_object_free_userdata(files, files);
-    json_object_free_userdata(fileContent, fileContent);
+    //json_object_free_userdata(fileContent, fileContent);
 
-    json_object_free_userdata(file, file);
+    //json_object_free_userdata(file, file);
 }

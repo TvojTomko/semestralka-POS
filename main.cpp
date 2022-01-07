@@ -11,7 +11,8 @@ int main() {
 
     jsonGetInfo("file1");
 
-    jsonReadAll();
+    //jsonReadAll();
+    readHeaders();
 
     exitProgram();
     return 0;
