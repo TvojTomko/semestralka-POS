@@ -30,6 +30,8 @@ private:
     std::string hostname;
     std::string path;
     std::string filepath;
+    std::string username;
+    std::string password;
     int priority;
     double size;
     double currentSize;
@@ -80,7 +82,8 @@ public:
 
     void checkfile(std::string &filename);
 
-    download(std::string protocol, std::string filename, std::string hostname, std::string ppath, int priority);
+    download(std::string protocol, std::string filename, std::string hostname, std::string ppath, int priority,
+             std::string pusername, std::string ppassword);
 
     const std::string &getAProtocol() const;
 
@@ -91,6 +94,8 @@ public:
     int https();
 
     int ftp();
+
+    int ftps();
 
     void setFilename(const std::string &filename);
 

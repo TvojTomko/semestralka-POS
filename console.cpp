@@ -19,9 +19,11 @@ void console::listener() {
             if (separateCommand(elements, command)) {
                 if (first == "download") {
                     int priority = elements.size() > 4 ? std::stoi(elements.at(4)) : 0;
+                    std::string username = elements.size() > 5 ? elements.at(5) : nullptr;
+                    std::string password = elements.size() > 6 ? elements.at(6) : nullptr;
                     dH->addDownload(
                             new download(elements.at(1), elements.at(3), elements.at(2), pathToDownload,
-                                         priority));
+                                         priority, username, password));
                 } else if (first == "history") {
                     //TODO history
                 } else if (first == "pause") {
@@ -91,8 +93,8 @@ void console::makeConsoleCommand(std::string &input) {
 
 bool console::checkInput(std::vector<std::string> &v) {
     if (v.at(0) == "download") {
-        if (v.size() > 5 || v.size() < 4) {
-            std::cout << "Wrong number of arguments " << v.size() << " required 4-5 " << std::endl;
+        if (v.size() > 7 || v.size() < 4) {
+            std::cout << "Wrong number of arguments " << v.size() << " required 4-7 " << std::endl;
             return false;
         } else if (!(std::find(protocols.begin(), protocols.end(), v.at(1)) != protocols.end())) {
             std::cout << "Wrong protocol " << v.at(1) << " required http/https/ftp/ftps" << std::endl;

@@ -5,7 +5,7 @@
 #include "download.h"
 
 download::download(std::string pprotocol, std::string pfilename, std::string phostname, std::string ppath,
-                   int ppriority) {
+                   int ppriority, std::string pusername, std::string ppassword) {
     protocol = pprotocol;
     filename = pfilename;
     hostname = phostname;
@@ -15,6 +15,8 @@ download::download(std::string pprotocol, std::string pfilename, std::string pho
     msg = "No";
     priority = ppriority;
     pause = false;
+    username = pusername;
+    password = ppassword;
 
 }
 
@@ -30,6 +32,8 @@ void download::startDownload() {
         https();
     } else if (protocol == "ftp") {
         ftp();
+    } else if (protocol == "ftps") {
+        ftps();
     }
 }
 
@@ -51,6 +55,10 @@ void download::resumeDownload() {
         http();
     } else if (protocol == "https") {
         https();
+    } else if (protocol == "ftp") {
+        ftp();
+    } else if (protocol == "ftps") {
+        ftps();
     }
 
 }
@@ -328,7 +336,7 @@ int download::ftp() {
 
         std::string strResult;
 
-        request_stream << "USER demo" << "\r\n";
+        request_stream << "USER " << username << "\r\n";
         boost::asio::write(socket, request);
         boost::asio::read_until(socket, response, "\r\n");
         std::getline(response_stream, strResult);
@@ -337,27 +345,27 @@ int download::ftp() {
             // strResult.clear();
             boost::asio::read_until(socket, response, "\r\n");
             std::getline(response_stream, strResult);
-            std::cout << strResult << std::endl;
+            //std::cout << strResult << std::endl;
 
         }
 
-        request_stream << "PASS password" << "\r\n";
+        request_stream << "PASS " << password << "\r\n";
         boost::asio::write(socket, request);
         boost::asio::read_until(socket, response, "\r\n");
         std::getline(response_stream, strResult);
-        std::cout << strResult << std::endl;
+        //std::cout << strResult << std::endl;
 
         request_stream << "TYPE I" << "\r\n";
         boost::asio::write(socket, request);
         boost::asio::read_until(socket, response, "\r\n");
         std::getline(response_stream, strResult);
-        std::cout << strResult << std::endl;
+        //std::cout << strResult << std::endl;
 
         request_stream << "PASV" << "\r\n";
         boost::asio::write(socket, request);
         boost::asio::read_until(socket, response, "\r\n");
         std::getline(response_stream, strResult);
-        std::cout << strResult << std::endl;
+        //std::cout << strResult << std::endl;
 
         std::string strPort = getHostAndPort(strResult);
 
@@ -365,7 +373,7 @@ int download::ftp() {
         boost::asio::write(socket, request);
         boost::asio::read_until(socket, response, "\r\n");
         std::getline(response_stream, strResult);
-        std::cout << strResult << std::endl;
+        //std::cout << strResult << std::endl;
         size = std::stoi(strResult.substr(strResult.find_first_of(" "), strResult.length() - 1));
         //std::cout << size << std::endl;
 
@@ -390,6 +398,166 @@ int download::ftp() {
         if (error) {
             throw boost::system::system_error(error);
         }
+
+        boost::asio::streambuf responseData;
+        boost::system::error_code errorData;
+
+        if (!resume || filepath.empty() || localFilename.empty()) {
+            std::string filenamenew = std::string(filename).substr(std::string(filename).find_last_of("/\\") + 1);
+            checkfile(filenamenew);
+            localFilename = filenamenew;
+            if (path.empty()) {
+                filepath = "./" + localFilename;
+            } else {
+                filepath = path + "/" + localFilename;
+            }
+
+        }
+        std::ofstream MyFile;
+        MyFile.open((filepath), std::ios::app);
+
+        // Write whatever content we already have to output.
+        int size = currentSize;
+        if (responseData.size() > 0) {
+            size += responseData.size();
+            MyFile << &responseData;
+
+        }
+
+        while (boost::asio::read(data_socket, responseData,
+                                 boost::asio::transfer_at_least(1), errorData)) {
+            size += responseData.size();
+            MyFile << &responseData;
+            currentSize = size;
+            if (pause) {
+                MyFile.close();
+                return 0;
+            }
+        }
+
+        if (errorData != boost::asio::error::eof) {
+            throw boost::system::error_code(errorData);
+        }
+
+        MyFile.close();
+        setMsg("Yes");
+        downloading = false;
+        return 0;
+
+
+    }
+    catch (std::exception &e) {
+        std::cout << "Exception: " << e.what() << "\n";
+    }
+
+    return 0;
+
+}
+
+int download::ftps() {
+    try {
+
+        boost::asio::io_service io_service;
+        // Create a context that uses the default paths for
+        // finding CA certificates.
+        ssl::context ctx(ssl::context::sslv23);
+        ctx.set_default_verify_paths();
+
+        // Get a list of endpoints corresponding to the server name.
+        tcp::resolver resolver(io_service);
+        tcp::resolver::query query(hostname, "ftps");
+        tcp::resolver::iterator endpoint_iterator = resolver.resolve(query);
+
+        // Try each endpoint until we successfully establish a connection.
+        ssl_socket socket(io_service, ctx);
+        boost::asio::connect(socket.lowest_layer(), endpoint_iterator);
+        socket.lowest_layer().set_option(tcp::no_delay(true));
+
+        // Perform SSL handshake and verify the remote host's
+        // certificate.
+        socket.set_verify_mode(boost::asio::ssl::verify_none);
+        socket.set_verify_callback(ssl::rfc2818_verification(hostname));
+        socket.handshake(ssl_socket::client);
+        tcp::resolver time_server_resolver(io_service);
+
+        boost::asio::streambuf request;
+        boost::asio::streambuf response;
+        //std::string strLine;
+        std::ostream request_stream(&request);
+        std::istream response_stream(&response);
+
+        std::string strResult;
+
+        request_stream << "USER " << username << "\r\n";
+        boost::asio::write(socket, request);
+        boost::asio::read_until(socket, response, "\r\n");
+        std::getline(response_stream, strResult);
+        std::cout << strResult << std::endl;
+        if (getRetCode(strResult) == 220) {
+            boost::asio::read_until(socket, response, "\r\n");
+            std::getline(response_stream, strResult);
+            // std::cout << strResult << std::endl;
+
+        }
+
+        request_stream << "PASS " << password << "\r\n";
+        boost::asio::write(socket, request);
+        boost::asio::read_until(socket, response, "\r\n");
+        std::getline(response_stream, strResult);
+        //std::cout << strResult << std::endl;
+
+        request_stream << "TYPE I" << "\r\n";
+        boost::asio::write(socket, request);
+        boost::asio::read_until(socket, response, "\r\n");
+        std::getline(response_stream, strResult);
+        // std::cout << strResult << std::endl;
+
+        request_stream << "PASV" << "\r\n";
+        boost::asio::write(socket, request);
+        boost::asio::read_until(socket, response, "\r\n");
+        std::getline(response_stream, strResult);
+        // std::cout << strResult << std::endl;
+
+        std::string strPort = getHostAndPort(strResult);
+        std::cout << strPort << std::endl;
+
+        request_stream << "SIZE " << filename << "\r\n";
+        boost::asio::write(socket, request);
+        boost::asio::read_until(socket, response, "\r\n");
+        std::getline(response_stream, strResult);
+        // std::cout << strResult << std::endl;
+        size = std::stoi(strResult.substr(strResult.find_first_of(" "), strResult.length() - 1));
+        //std::cout << size << std::endl;
+
+        if (resume) {
+            request_stream << "REST " << std::to_string((int) currentSize) << "\r\n";
+            boost::asio::write(socket, request);
+        }
+
+        request_stream << "RETR " << filename << "\r\n";
+        boost::asio::write(socket, request);
+
+        //tcp::socket data_socket(io_service);
+        boost::asio::io_service data_io_service;
+        ssl::context data_ctx(ssl::context::sslv23);
+        data_ctx.set_default_verify_paths();
+
+        // Get a list of endpoints corresponding to the server name.
+        tcp::resolver data_resolver(data_io_service);
+        tcp::resolver::query data_query(hostname, strPort);
+        tcp::resolver::iterator data_endpoint_iterator = resolver.resolve(data_query);
+
+        // Try each endpoint until we successfully establish a connection.
+        ssl_socket data_socket(data_io_service, ctx);
+        boost::asio::connect(data_socket.lowest_layer(), data_endpoint_iterator);
+        data_socket.lowest_layer().set_option(tcp::no_delay(true));
+
+        // Perform SSL handshake and verify the remote host's
+        // certificate.
+        data_socket.set_verify_mode(boost::asio::ssl::verify_none);
+        data_socket.set_verify_callback(ssl::rfc2818_verification(hostname));
+        data_socket.handshake(ssl_socket::client);
+        tcp::resolver data_time_server_resolver(io_service);
 
         boost::asio::streambuf responseData;
         boost::system::error_code errorData;
