@@ -4,6 +4,15 @@
 using namespace std;
 
 int main() {
-    jsonWrite();
+    //jsonWrite();
+
+    //jsonDelete();
+
+    //jsonReadAll();
+
+    jsonGetInfo("file", 1);
+
+
+    exitProgram();
     return 0;
 }

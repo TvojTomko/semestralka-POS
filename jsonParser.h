@@ -1,13 +1,10 @@
-//
-// Created by kali on 1/2/22.
-//
-
 #ifndef SEMESTRALKA_JSONPARSER_H
-
-
-void jsonRead();
-void jsonWrite();
-
 #define SEMESTRALKA_JSONPARSER_H
+
+void jsonReadAll();
+void jsonWrite();
+void jsonDelete();
+void jsonGetInfo(std::string fn, int key);
+void exitProgram();
 
 #endif //SEMESTRALKA_JSONPARSER_H
