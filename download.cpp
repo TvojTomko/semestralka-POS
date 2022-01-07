@@ -340,7 +340,7 @@ int download::ftp() {
         boost::asio::write(socket, request);
         boost::asio::read_until(socket, response, "\r\n");
         std::getline(response_stream, strResult);
-        std::cout << strResult << std::endl;
+        //std::cout << strResult << std::endl;
         if (getRetCode(strResult) == 220) {
             // strResult.clear();
             boost::asio::read_until(socket, response, "\r\n");
@@ -492,7 +492,7 @@ int download::ftps() {
         boost::asio::write(socket, request);
         boost::asio::read_until(socket, response, "\r\n");
         std::getline(response_stream, strResult);
-        std::cout << strResult << std::endl;
+        //std::cout << strResult << std::endl;
         if (getRetCode(strResult) == 220) {
             boost::asio::read_until(socket, response, "\r\n");
             std::getline(response_stream, strResult);
@@ -519,7 +519,7 @@ int download::ftps() {
         // std::cout << strResult << std::endl;
 
         std::string strPort = getHostAndPort(strResult);
-        std::cout << strPort << std::endl;
+        //std::cout << strPort << std::endl;
 
         request_stream << "SIZE " << filename << "\r\n";
         boost::asio::write(socket, request);

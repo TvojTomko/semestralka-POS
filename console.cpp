@@ -19,8 +19,8 @@ void console::listener() {
             if (separateCommand(elements, command)) {
                 if (first == "download") {
                     int priority = elements.size() > 4 ? std::stoi(elements.at(4)) : 0;
-                    std::string username = elements.size() > 5 ? elements.at(5) : nullptr;
-                    std::string password = elements.size() > 6 ? elements.at(6) : nullptr;
+                    std::string username = elements.size() > 5 ? elements.at(5) : "";
+                    std::string password = elements.size() > 6 ? elements.at(6) : "";
                     dH->addDownload(
                             new download(elements.at(1), elements.at(3), elements.at(2), pathToDownload,
                                          priority, username, password));
