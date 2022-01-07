@@ -54,6 +54,10 @@ void console::listener() {
                     dH->manageDownloadings();
                 } else if (first == "setPriority") {
                     dH->setPriority(std::stoi(elements.at(1)), std::stoi(elements.at(2)));
+                } else if (first == "plan") {
+                    //TODO planning
+                } else if (first == "schedule") {
+                    //TODO schedule
                 }
             }
         } else {
