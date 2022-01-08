@@ -9,9 +9,9 @@ int main() {
 
     //jsonDelete("file3");
 
-    //jsonGetInfo("file1");
+    jsonGetAllInfo("file1");
 
-    //jsonReadAll();
+    jsonReadAll();
 
     //exitProgram();
     return 0;

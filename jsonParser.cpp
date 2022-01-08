@@ -3,12 +3,6 @@
 
 #include "jsonParser.h"
 
-/*
- * TO DO:
- *      classu parser
- *      novy json subor planovac + jeho funkcie
- */
-
 using namespace std;
 
 FILE *fp;
@@ -27,7 +21,6 @@ struct json_object *size;
 struct json_object *downloaded;
 struct json_object *protocol;
 struct json_object *priority;
-
 
 void jsonReadAll() {
     struct json_object *files;
@@ -59,6 +52,7 @@ void jsonReadAll() {
     }
 
     json_object_put(files);
+    free(buffer);
 }
 
 void jsonWrite() {
@@ -102,6 +96,7 @@ void jsonWrite() {
     json_object_to_file_ext("json-test.json", object, JSON_C_TO_STRING_SPACED | JSON_C_TO_STRING_PRETTY);
 
     json_object_put(object);
+    free(buffer);
 }
 
 void jsonDelete(string fn) {
@@ -128,9 +123,10 @@ void jsonDelete(string fn) {
     json_object_to_file_ext("json-test.json", object, JSON_C_TO_STRING_SPACED | JSON_C_TO_STRING_PRETTY);
 
     json_object_put(object);
+    free(buffer);
 }
 
-void jsonGetInfo(string fn) {
+void jsonGetAllInfo(string fn) {
     struct json_object *object;
 
     string final;
@@ -180,39 +176,10 @@ void jsonGetInfo(string fn) {
     final += " ";
     final += json_object_get_string(priority);
 
-    /*
-    switch (key) {
-        case 1:
-            cout << json_object_get_string(hostname) << endl;
-            break;
-        case 2:
-            cout << json_object_get_string(filename) << endl;
-            break;
-        case 3:
-            cout << json_object_get_string(localfilename) << endl;
-            break;
-        case 4:
-            cout << json_object_get_string(path) << endl;
-            break;
-        case 5:
-            cout << json_object_get_string(size) << endl;
-            break;
-        case 6:
-            cout << json_object_get_string(downloaded) << endl;
-            break;
-        case 7:
-            cout << json_object_get_string(protocol) << endl;
-            break;
-        case 8:
-            cout << json_object_get_string(priority) << endl;
-            break;
-    }
-    */
-
     cout << final << endl;
 
     json_object_put(object);
-
+    free(buffer);
 }
 
 void exitProgram() {
@@ -226,6 +193,6 @@ void exitProgram() {
     json_object_free_userdata(protocol, protocol);
     json_object_free_userdata(priority, priority);
 
-    free(buffer);
+    //free(buffer);
 
 }

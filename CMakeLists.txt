@@ -7,5 +7,4 @@ add_executable(semestralka main.cpp jsonParser.cpp jsonParser.h)
 
 target_link_libraries(semestralka json-c)
 
-
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=leak ")
