@@ -116,12 +116,19 @@ fseek(fp, 0L, SEEK_END);
 
     json_object_object_add(file, "scheduled-time",json_object_new_string(timep.c_str()));
 
+
+
     json_object_object_add(object, key.c_str(), file);
 
     json_object_to_file_ext("currentdownload.json", file, JSON_C_TO_STRING_SPACED | JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE);
 
+    //json_object_to_file_ext("history.json", file, JSON_C_TO_STRING_SPACED | JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE);
+
+    addToHistory(file, key);
+
     json_object_to_file_ext("json-test.json", object, JSON_C_TO_STRING_SPACED | JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE);
 
+    //json_object_put(file);
     json_object_put(object);
     free(buffer);
 }
@@ -234,7 +241,7 @@ void jsonGetAllInfo() {
                 cout << final << endl;
 
                 json_object_object_del(object, name.c_str());
-                json_object_to_file_ext("json-test.json", object, JSON_C_TO_STRING_SPACED | JSON_C_TO_STRING_PRETTY);
+                json_object_to_file_ext("json-test.json", object, JSON_C_TO_STRING_SPACED | JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE);
             }
 
             flnum++;
@@ -280,8 +287,43 @@ void jsonDelete(string fn) {
 
     json_object_object_del(object, fn.c_str());
 
-    json_object_to_file_ext("json-test.json", object, JSON_C_TO_STRING_SPACED | JSON_C_TO_STRING_PRETTY);
+    json_object_to_file_ext("json-test.json", object, JSON_C_TO_STRING_SPACED | JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE);
 
     json_object_put(object);
+    free(buffer);
+}
+
+void addToHistory(struct json_object *p, string fn) {
+    struct json_object *object1;
+
+    long sz;
+
+    fp = fopen("history.json", "r");
+    if (fp == NULL) {
+        cout << "Error opening file...";
+        return;
+    }
+    fseek(fp, 0L, SEEK_END);
+    sz = ftell(fp);
+    fclose(fp);
+    //cout << sz;
+
+    buffer = (char*)malloc(sz);
+
+    fp = fopen("history.json", "r");
+    if (fp == NULL) {
+        cout << "Error opening file...";
+        return;
+    }
+    fread(buffer, sz, 1, fp);
+    fclose(fp);
+
+    object1 = json_tokener_parse(buffer);
+
+    json_object_object_add(object1, fn.c_str(), p);
+
+    json_object_to_file_ext("history.json", object1,JSON_C_TO_STRING_SPACED | JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE);
+
+    json_object_put(object1);
     free(buffer);
 }
