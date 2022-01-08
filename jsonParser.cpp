@@ -197,13 +197,70 @@ void jsonGetAllInfo(string fn) {
     for(int i = 0; i < length; i++) {
         name = "file" + to_string(flnum);
 
-        cout << name;
-
         if (json_object_object_get(object, name.c_str()) != nullptr) {
-            cout << json_object_to_json_string(json_object_object_get(object, name.c_str())) << endl;
+            cout << name << endl;
+
+            //cout << json_object_to_json_string(json_object_object_get(object, name.c_str())) << endl;
+
+            json_object_object_get_ex(object, name.c_str(), &file);
+
+            //cout << json_object_to_json_string_ext(file, JSON_C_TO_STRING_SPACED | JSON_C_TO_STRING_PRETTY) << endl;
+
+            json_object_object_get_ex(file, "hostname", &hostname);
+            json_object_object_get_ex(file, "filename", &filename);
+            json_object_object_get_ex(file, "localfilename", &localfilename);
+            json_object_object_get_ex(file, "path", &path);
+            json_object_object_get_ex(file, "size", &size);
+            json_object_object_get_ex(file, "downloaded", &downloaded);
+            json_object_object_get_ex(file, "protocol", &protocol);
+            json_object_object_get_ex(file, "priority", &priority);
+            json_object_object_get_ex(file, "scheduled-time", &time);
+
+            string stime = json_object_get_string(time);
+            std::tm schedtime = {};
+
+            strptime(stime.c_str(), "%a %b %d %H:%M:%S %Y", &schedtime);
+
+            std::time_t schedtm = mktime(&schedtime);
+
+            auto current = std::chrono::system_clock::now();
+            std::time_t currenttm = std::chrono::system_clock::to_time_t(current);
+
+            cout << "scheduled time: " << asctime(&schedtime);
+            cout << "current time: " << std::ctime(&currenttm) << endl;
+
+            if(schedtm > currenttm)
+            cout << "you have enough time... chill" << endl;
+            if (schedtm <= currenttm) {
+                cout << "start download..." << endl;
+
+                final += json_object_get_string(hostname);
+                final += " ";
+                final += json_object_get_string(filename);
+                final += " ";
+                final += json_object_get_string(localfilename);
+                final += " ";
+                final += json_object_get_string(path);
+                final += " ";
+                final += json_object_get_string(size);
+                final += " ";
+                final += json_object_get_string(downloaded);
+                final += " ";
+                final += json_object_get_string(protocol);
+                final += " ";
+                final += json_object_get_string(priority);
+
+                cout << final << endl;
+            }
+
             flnum++;
-        } else
+        } else {
+            cout << name << " not found, searching again..." << endl;
             flnum++;
+            i--;
+        }
+
+        cout << "*******************************************************************************************" << endl;
     }
 
     /*
