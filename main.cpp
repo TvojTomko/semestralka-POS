@@ -4,22 +4,14 @@
 using namespace std;
 
 int main() {
-    //jsonWrite();
-    //jsonWrite();
-
-    //jsonDelete("file3");
-
-    //jsonGetAllInfo("file1");
-    //jsonGetAllInfo("file2");
-    //jsonGetAllInfo("file3");
 
     fileHandler fh;
 
     //fh.history();
 
-    //fh.addSchedule();
+    fh.addSchedule("hname", "fname", "lfname", "path/path", "123", "100", "http", "1", "Sat Jan 8 14:23:51 2022");
 
-    fh.checkSchedule();
+    //fh.checkSchedule();
 
 
     return 0;

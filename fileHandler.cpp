@@ -12,6 +12,9 @@ void fileHandler::checkSchedule() {
     jsonGetAllInfo();
 }
 
-void fileHandler::addSchedule() {
-    jsonWrite("hname", "fname", "lfname", "path/path", "123", "100", "http", "1", "12:00");
+void
+fileHandler::addSchedule(std::string hostnamep, std::string filenamep, std::string localfilenamep, std::string pathp,
+                         std::string sizep, std::string downloadedp, std::string protocolp, std::string priorityp,
+                         std::string timep) {
+    jsonWrite(hostnamep, filenamep, localfilenamep, pathp, sizep, downloadedp, protocolp, priorityp, timep);
 }
