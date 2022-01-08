@@ -145,7 +145,7 @@ fread(buffer, sz, 1, fp);
     free(buffer);
 }
 
-void jsonGetAllInfo(string fn) {
+void jsonGetAllInfo() {
     struct json_object *object;
 
     struct json_object *hostname;

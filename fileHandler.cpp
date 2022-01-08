@@ -9,7 +9,7 @@ void fileHandler::history() {
 }
 
 void fileHandler::checkSchedule() {
-    jsonGetAllInfo("file2");
+    jsonGetAllInfo();
 }
 
 void fileHandler::addSchedule() {
