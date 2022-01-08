@@ -23,6 +23,10 @@ void jsonReadAll() {
     long sz;
 
     fp = fopen("json-test.json", "r");
+    if (fp == NULL) {
+        cout << "Error opening file...";
+        return;
+    }
     fseek(fp, 0L, SEEK_END);
     sz = ftell(fp);
     fclose(fp);
@@ -31,6 +35,10 @@ void jsonReadAll() {
     buffer = (char*)malloc(sz);
 
     fp = fopen("json-test.json", "r");
+    if (fp == NULL) {
+        cout << "Error opening file...";
+        return;
+    }
     fread(buffer, sz, 1, fp);
     fclose(fp);
 
@@ -53,7 +61,11 @@ void jsonWrite(string hostnamep, string filenamep, string localfilenamep, string
     long sz;
 
     fp = fopen("json-test.json", "r");
-    fseek(fp, 0L, SEEK_END);
+    if (fp == NULL) {
+    cout << "Error opening file...";
+    return;
+    }
+fseek(fp, 0L, SEEK_END);
     sz = ftell(fp);
     fclose(fp);
     //cout << sz;
@@ -61,6 +73,10 @@ void jsonWrite(string hostnamep, string filenamep, string localfilenamep, string
     buffer = (char*)malloc(sz);
 
     fp = fopen("json-test.json", "r");
+    if (fp == NULL) {
+    cout << "Error opening file...";
+    return;
+    }
     fread(buffer, sz, 1, fp);
     fclose(fp);
 
@@ -100,7 +116,11 @@ void jsonDelete(string fn) {
     long sz;
 
     fp = fopen("json-test.json", "r");
-    fseek(fp, 0L, SEEK_END);
+    if (fp == NULL) {
+    cout << "Error opening file...";
+    return;
+    }
+fseek(fp, 0L, SEEK_END);
     sz = ftell(fp);
     fclose(fp);
     //cout << sz;
@@ -108,7 +128,11 @@ void jsonDelete(string fn) {
     buffer = (char*)malloc(sz);
 
     fp = fopen("json-test.json", "r");
-    fread(buffer, sz, 1, fp);
+    if (fp == NULL) {
+    cout << "Error opening file...";
+    return;
+    }
+fread(buffer, sz, 1, fp);
     fclose(fp);
 
     object = json_tokener_parse(buffer);
@@ -133,13 +157,19 @@ void jsonGetAllInfo(string fn) {
     struct json_object *protocol;
     struct json_object *priority;
 
-    struct json_object * time;
+    struct json_object *time;
 
     string final;
 
     long sz;
 
     fp = fopen("json-test.json", "r");
+
+    if (fp == NULL) {
+    cout << "Error opening file...";
+    return;
+    }
+
     fseek(fp, 0L, SEEK_END);
     sz = ftell(fp);
     fclose(fp);
@@ -148,11 +178,35 @@ void jsonGetAllInfo(string fn) {
     buffer = (char*)malloc(sz);
 
     fp = fopen("json-test.json", "r");
+
+    if (fp == NULL) {
+        cout << "Error opening file...";
+        return;
+    }
+
     fread(buffer, sz, 1, fp);
     fclose(fp);
 
     object = json_tokener_parse(buffer);
 
+    int length = json_object_object_length(object);
+
+    string name;
+    int flnum = 1;
+
+    for(int i = 0; i < length; i++) {
+        name = "file" + to_string(flnum);
+
+        cout << name;
+
+        if (json_object_object_get(object, name.c_str()) != nullptr) {
+            cout << json_object_to_json_string(json_object_object_get(object, name.c_str())) << endl;
+            flnum++;
+        } else
+            flnum++;
+    }
+
+    /*
     json_object_object_get_ex(object, fn.c_str(), &file);
 
     cout << json_object_to_json_string_ext(file, JSON_C_TO_STRING_SPACED | JSON_C_TO_STRING_PRETTY) << endl;
@@ -182,29 +236,28 @@ void jsonGetAllInfo(string fn) {
 
     if(schedtm > currenttm)
         cout << "you have enough time..." << endl;
-    if (schedtm <= currenttm)
+    if (schedtm <= currenttm) {
         cout << "start download..." << endl;
-    else
-        cout << "error!!!" << endl;
 
-    final += json_object_get_string(hostname);
-    final += " ";
-    final += json_object_get_string(filename);
-    final += " ";
-    final += json_object_get_string(localfilename);
-    final += " ";
-    final += json_object_get_string(path);
-    final += " ";
-    final += json_object_get_string(size);
-    final += " ";
-    final += json_object_get_string(downloaded);
-    final += " ";
-    final += json_object_get_string(protocol);
-    final += " ";
-    final += json_object_get_string(priority);
+        final += json_object_get_string(hostname);
+        final += " ";
+        final += json_object_get_string(filename);
+        final += " ";
+        final += json_object_get_string(localfilename);
+        final += " ";
+        final += json_object_get_string(path);
+        final += " ";
+        final += json_object_get_string(size);
+        final += " ";
+        final += json_object_get_string(downloaded);
+        final += " ";
+        final += json_object_get_string(protocol);
+        final += " ";
+        final += json_object_get_string(priority);
 
-    cout << final << endl;
-
+        cout << final << endl;
+    }
+*/
     json_object_put(object);
     free(buffer);
 }
