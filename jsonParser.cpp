@@ -13,14 +13,6 @@ struct json_object *file;
 
 struct json_object *fileContent;
 
-struct json_object *hostname;
-struct json_object *filename;
-struct json_object *localfilename;
-struct json_object *path;
-struct json_object *size;
-struct json_object *downloaded;
-struct json_object *protocol;
-struct json_object *priority;
 
 void jsonReadAll() {
     struct json_object *files;
@@ -129,6 +121,15 @@ void jsonDelete(string fn) {
 void jsonGetAllInfo(string fn) {
     struct json_object *object;
 
+    struct json_object *hostname;
+    struct json_object *filename;
+    struct json_object *localfilename;
+    struct json_object *path;
+    struct json_object *size;
+    struct json_object *downloaded;
+    struct json_object *protocol;
+    struct json_object *priority;
+
     string final;
 
     long sz;
@@ -180,19 +181,4 @@ void jsonGetAllInfo(string fn) {
 
     json_object_put(object);
     free(buffer);
-}
-
-void exitProgram() {
-
-    json_object_free_userdata(hostname, hostname);
-    json_object_free_userdata(filename, filename);
-    json_object_free_userdata(localfilename, localfilename);
-    json_object_free_userdata(path, path);
-    json_object_free_userdata(size, size);
-    json_object_free_userdata(downloaded, downloaded);
-    json_object_free_userdata(protocol, protocol);
-    json_object_free_userdata(priority, priority);
-
-    //free(buffer);
-
 }
