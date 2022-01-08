@@ -251,6 +251,9 @@ void jsonGetAllInfo() {
                 final += json_object_get_string(priority);
 
                 cout << final << endl;
+
+                json_object_object_del(object, name.c_str());
+                json_object_to_file_ext("json-test.json", object, JSON_C_TO_STRING_SPACED | JSON_C_TO_STRING_PRETTY);
             }
 
             flnum++;
