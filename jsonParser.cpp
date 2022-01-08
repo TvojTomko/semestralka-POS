@@ -12,7 +12,7 @@
 using namespace std;
 
 FILE *fp;
-char buffer[1024];
+char *buffer;
 size_t filesNum;
 
 struct json_object *file;
@@ -32,8 +32,18 @@ struct json_object *priority;
 void jsonReadAll() {
     struct json_object *files;
 
+    long sz;
+
     fp = fopen("json-test.json", "r");
-    fread(buffer, 1024, 1, fp);
+    fseek(fp, 0L, SEEK_END);
+    sz = ftell(fp);
+    fclose(fp);
+    //cout << sz;
+
+    buffer = (char*)malloc(sz);
+
+    fp = fopen("json-test.json", "r");
+    fread(buffer, sz, 1, fp);
     fclose(fp);
 
 
@@ -51,32 +61,28 @@ void jsonReadAll() {
     json_object_put(files);
 }
 
-void readHeaders() {
-    /*
-    struct json_object *parsed_json;
-    struct json_object *object;
-
-    fp = fopen("json-test.json", "r");
-    fread(buffer, 1024, 1, fp);
-    fclose(fp);
-
-    parsed_json = json_tokener_parse(buffer);
-
-    object = json_object_get(parsed_json);
-
-     json_object_put(parsed_json);
-     json_object_put(object);
-    */
-}
-
 void jsonWrite() {
     struct json_object *object;
+    long sz;
 
     fp = fopen("json-test.json", "r");
-    fread(buffer, 1024, 1, fp);
+    fseek(fp, 0L, SEEK_END);
+    sz = ftell(fp);
+    fclose(fp);
+    //cout << sz;
+
+    buffer = (char*)malloc(sz);
+
+    fp = fopen("json-test.json", "r");
+    fread(buffer, sz, 1, fp);
     fclose(fp);
 
     object = json_tokener_parse(buffer);
+
+    int num = json_object_object_length(object);
+    string key = "file" + to_string(num+1);
+
+    cout << key;
 
     file = json_object_new_object();
 
@@ -89,7 +95,7 @@ void jsonWrite() {
     json_object_object_add(file, "protocol", json_object_new_string("httpss"));
     json_object_object_add(file, "priority", json_object_new_string("1"));
 
-    json_object_object_add(object, "file3", file);
+    json_object_object_add(object, key.c_str(), file);
 
     json_object_to_file_ext("currentdownload.json", file, JSON_C_TO_STRING_SPACED | JSON_C_TO_STRING_PRETTY);
 
@@ -101,8 +107,18 @@ void jsonWrite() {
 void jsonDelete(string fn) {
     struct json_object *object;
 
+    long sz;
+
     fp = fopen("json-test.json", "r");
-    fread(buffer, 1024, 1, fp);
+    fseek(fp, 0L, SEEK_END);
+    sz = ftell(fp);
+    fclose(fp);
+    //cout << sz;
+
+    buffer = (char*)malloc(sz);
+
+    fp = fopen("json-test.json", "r");
+    fread(buffer, sz, 1, fp);
     fclose(fp);
 
     object = json_tokener_parse(buffer);
@@ -119,8 +135,18 @@ void jsonGetInfo(string fn) {
 
     string final;
 
+    long sz;
+
     fp = fopen("json-test.json", "r");
-    fread(buffer, 1024, 1, fp);
+    fseek(fp, 0L, SEEK_END);
+    sz = ftell(fp);
+    fclose(fp);
+    //cout << sz;
+
+    buffer = (char*)malloc(sz);
+
+    fp = fopen("json-test.json", "r");
+    fread(buffer, sz, 1, fp);
     fclose(fp);
 
     object = json_tokener_parse(buffer);
@@ -200,8 +226,6 @@ void exitProgram() {
     json_object_free_userdata(protocol, protocol);
     json_object_free_userdata(priority, priority);
 
-    //json_object_free_userdata(files, files);
-    //json_object_free_userdata(fileContent, fileContent);
+    free(buffer);
 
-    //json_object_free_userdata(file, file);
 }
