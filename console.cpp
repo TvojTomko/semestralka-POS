@@ -57,7 +57,7 @@ void console::listener() {
                 } else if (first == "plan") {
                     //TODO planning
                 } else if (first == "schedule") {
-                    //TODO schedule
+                    dH->schedule();
                 }
             }
         } else {

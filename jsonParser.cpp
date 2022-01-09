@@ -50,7 +50,7 @@ void jsonReadSchedule() {
 
     fileContent = json_object_array_get_idx(files, 0);
 
-    cout << "Reading json... " << endl << json_object_to_json_string_ext(fileContent,JSON_C_TO_STRING_SPACED | JSON_C_TO_STRING_PRETTY) << endl;
+    cout << "Reading json... " << endl << json_object_to_json_string_ext(fileContent,JSON_C_TO_STRING_SPACED | JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE) << endl;
 
     json_object_put(files);
     free(buffer);
@@ -371,7 +371,7 @@ void jsonReadHistory() {
 
     fileContent = json_object_array_get_idx(files, 0);
 
-    cout << "Reading json... " << endl << json_object_to_json_string_ext(fileContent,JSON_C_TO_STRING_SPACED | JSON_C_TO_STRING_PRETTY) << endl;
+    cout << "Reading json... " << endl << json_object_to_json_string_ext(fileContent,JSON_C_TO_STRING_SPACED | JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE) << endl;
 
     json_object_put(files);
     free(buffer);

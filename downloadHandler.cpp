@@ -217,3 +217,7 @@ bool downloadHandler::isManage() const {
 void downloadHandler::history() {
     jsonReadHistory();
 }
+
+void downloadHandler::schedule() {
+    jsonReadSchedule();
+}

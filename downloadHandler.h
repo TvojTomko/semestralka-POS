@@ -76,6 +76,8 @@ public:
     bool isManage() const;
 
     void history();
+
+    void schedule();
 };
 
 
