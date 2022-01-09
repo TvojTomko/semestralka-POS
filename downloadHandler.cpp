@@ -7,7 +7,8 @@
 downloadHandler::downloadHandler() {
     downloading = 0;
     maxDownloading = 4;
-    checkSchedule();
+    //checkSchedule();
+
 }
 
 void downloadHandler::startDownloading(int i) {
@@ -231,7 +232,23 @@ void downloadHandler::plan(std::string protocolp, std::string hostnamep, std::st
 }
 
 void downloadHandler::checkSchedule(){
-    std::string command;
-    jsonGetAllInfo(command);
-    std::cout<<command;
+    while(!exit) {
+        sleep(1);
+        std::string command;
+        jsonGetAllInfo(command);
+        std::vector<std::string> v;
+        if (!command.empty()) {
+            size_t pos;
+            while ((pos = command.find(" ")) != std::string::npos) {
+                v.push_back(command.substr(0, pos));
+                command.erase(0, pos + 1);
+            }
+            v.push_back(command);
+            std::string pathToDownload;
+            addDownload(new download(v.at(1), v.at(3), v.at(2), pathToDownload,
+                                     0, "", ""));
+        }
+    }
+
+
 }

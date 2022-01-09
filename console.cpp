@@ -7,6 +7,9 @@
 
 void console::listener() {
     dH = new downloadHandler();
+
+    std::jthread th(&downloadHandler::checkSchedule, dH);
+    th.detach();
     while (!exit) {
         std::string command;
         getline(std::cin, command);
