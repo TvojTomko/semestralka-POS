@@ -8,12 +8,12 @@ void fileHandler::history() {
     jsonReadSchedule();
 }
 
-void fileHandler::checkSchedule() {
-    jsonGetAllInfo();
+void fileHandler::checkSchedule(std::string &v) {
+    jsonGetAllInfo(v);
 }
 
 void
-fileHandler::addSchedule(std::string protocolp, std::string hostnamep, std::string filenamep, std::string timep,
+fileHandler::addSchedule(std::string protocolp, std::string hostnamep, std::string filenamep,std::string date, std::string timep,
                          std::string priorityp, std::string usernamep, std::string passwordp) {
-    jsonWrite( protocolp, hostnamep, filenamep, timep, priorityp, usernamep, passwordp);
+    jsonWrite( protocolp, hostnamep, filenamep,date, timep, priorityp, usernamep, passwordp);
 }

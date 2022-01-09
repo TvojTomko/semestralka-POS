@@ -7,6 +7,7 @@
 downloadHandler::downloadHandler() {
     downloading = 0;
     maxDownloading = 4;
+    checkSchedule();
 }
 
 void downloadHandler::startDownloading(int i) {
@@ -222,10 +223,15 @@ void downloadHandler::schedule() {
     jsonReadSchedule();
 }
 
-void downloadHandler::plan(std::string protocolp, std::string hostnamep, std::string filenamep, std::string timep,
+void downloadHandler::plan(std::string protocolp, std::string hostnamep, std::string filenamep,std::string date, std::string timep,
                            std::string priorityp, std::string usernamep, std::string passwordp) {
     //plan protocol hostname filename time priority username password
 
+    jsonWrite(protocolp, hostnamep, filenamep,date, timep, priorityp, usernamep, passwordp);
+}
 
-    jsonWrite(protocolp, hostnamep, filenamep, timep, priorityp, usernamep, passwordp);
+void downloadHandler::checkSchedule(){
+    std::string command;
+    jsonGetAllInfo(command);
+    std::cout<<command;
 }

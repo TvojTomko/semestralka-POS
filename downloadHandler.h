@@ -79,8 +79,10 @@ public:
 
     void schedule();
 
-    void plan(std::string protocolp, std::string hostnamep, std::string filenamep, std::string timep,
+    void plan(std::string protocolp, std::string hostnamep, std::string filenamep,std::string date, std::string timep,
               std::string priorityp, std::string usernamep, std::string passwordp);
+
+    void checkSchedule();
 };
 
 

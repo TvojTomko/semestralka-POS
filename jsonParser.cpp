@@ -2,6 +2,13 @@
 #include <iostream>
 #include <chrono>
 #include <time.h>
+#include <sstream>
+#include <chrono>  // chrono::system_clock
+#include <ctime>   // localtime
+#include <sstream> // stringstream
+#include <iomanip> // put_time
+#include <string>  // string
+#include <vector>
 
 #include "jsonParser.h"
 
@@ -16,6 +23,7 @@ struct json_object *file;
 struct json_object *fileh;
 
 struct json_object *fileContent;
+
 
 void jsonReadSchedule() {
     struct json_object *files;
@@ -56,7 +64,7 @@ void jsonReadSchedule() {
     free(buffer);
 }
 
-void jsonWrite(std::string protocolp, std::string hostnamep, std::string filenamep, std::string timep,
+void jsonWrite(std::string protocolp, std::string hostnamep, std::string filenamep,std::string date, std::string timep,
                std::string priorityp, std::string usernamep, std::string passwordp) {
     struct json_object *object;
     long sz;
@@ -114,6 +122,7 @@ void jsonWrite(std::string protocolp, std::string hostnamep, std::string filenam
     json_object_object_add(file, "protocol", json_object_new_string(protocolp.c_str()));
     json_object_object_add(file, "hostname", json_object_new_string(hostnamep.c_str()));
     json_object_object_add(file, "filename", json_object_new_string(filenamep.c_str()));
+    json_object_object_add(file, "date",json_object_new_string(date.c_str()));
     json_object_object_add(file, "scheduled-time",json_object_new_string(timep.c_str()));
     json_object_object_add(file, "priority", json_object_new_string(priorityp.c_str()));
     json_object_object_add(file, "username", json_object_new_string(usernamep.c_str()));
@@ -137,7 +146,9 @@ void jsonWrite(std::string protocolp, std::string hostnamep, std::string filenam
 
 }
 
-void jsonGetAllInfo() {
+
+
+void jsonGetAllInfo(std::string &s) {
 
     //plan protocol hostname filename time priority username password
 
@@ -146,19 +157,20 @@ void jsonGetAllInfo() {
     struct json_object *protocol;
     struct json_object *hostname;
     struct json_object *filename;
+    struct json_object *date;
     struct json_object *time;
     struct json_object *priority;
     struct json_object *username;
     struct json_object *password;
 
-    string final;
 
+    string final;
     long sz;
 
     fp = fopen("json-test.json", "r");
 
     if (fp == nullptr) {
-        cout << "Error opening file...";
+      //  cout << "Error opening file...";
         return;
     }
 
@@ -172,7 +184,7 @@ void jsonGetAllInfo() {
     fp = fopen("json-test.json", "r");
 
     if (fp == nullptr) {
-        cout << "Error opening file...";
+        //cout << "Error opening file...";
         return;
     }
 
@@ -190,7 +202,7 @@ void jsonGetAllInfo() {
         name = "file" + to_string(flnum);
 
         if (json_object_object_get(object, name.c_str()) != nullptr) {
-            cout << name << endl;
+           // cout << name << endl;
 
             //cout << json_object_to_json_string(json_object_object_get(object, name.c_str())) << endl;
 
@@ -203,28 +215,138 @@ void jsonGetAllInfo() {
             json_object_object_get_ex(file, "protocol", &protocol);
             json_object_object_get_ex(file, "hostname", &hostname);
             json_object_object_get_ex(file, "filename", &filename);
+            json_object_object_get_ex(file, "date", &date);
             json_object_object_get_ex(file, "scheduled-time", &time);
             json_object_object_get_ex(file, "priority", &priority);
             json_object_object_get_ex(file, "username", &username);
             json_object_object_get_ex(file, "password", &password);
 
-            string stime = json_object_get_string(time);
-            std::tm schedtime = {};
+            //datum
+            bool datumSpusti;
+            auto now = std::chrono::system_clock::now();
+            auto in_time_t = std::chrono::system_clock::to_time_t(now);
+            std::stringstream ss;
+            ss << std::put_time(std::localtime(&in_time_t), "%d.%m.%Y");
+           // std::cout<<ss.str()<<std::endl;
 
-            strptime(stime.c_str(), "%a %b %d %H:%M:%S %Y", &schedtime);
+            std::string today=ss.str();
+            std::vector<std::string> dates;
+            //separateCommand(timeE,stime);
+            size_t posD;
+            while ((posD = today.find(".")) != std::string::npos) {
+                dates.push_back(today.substr(0, posD));
+                today.erase(0, posD + 1);
+            }
+            dates.push_back(today);
 
-            std::time_t schedtm = mktime(&schedtime);
+            string cdate = json_object_get_string(date);
 
-            auto current = std::chrono::system_clock::now();
-            std::time_t currenttm = std::chrono::system_clock::to_time_t(current);
+            std::vector<std::string> datesF;
+            //separateCommand(timeE,stime);
+            size_t posDF;
+            while ((posDF = cdate.find(".")) != std::string::npos) {
+                datesF.push_back(cdate.substr(0, posDF));
+                cdate.erase(0, posDF + 1);
+            }
+            datesF.push_back(cdate);
 
-            cout << "scheduled time: " << asctime(&schedtime);
-            cout << "current time: " << std::ctime(&currenttm) << endl;
+            if(std::stoi(dates.at(2))>std::stoi(datesF.at(2))){
+                //std::cout << "spustit2" << std::endl;
+            datumSpusti=true;
+            }else if(std::stoi(dates.at(2))<std::stoi(datesF.at(2))){
+               // std::cout << "nespustit2" << std::endl;
+               datumSpusti=false;
+            }else{
+                if(std::stoi(dates.at(1))>std::stoi(datesF.at(1))){
+                  //  std::cout << "spustit1" << std::endl;
+                    datumSpusti=true;
+                }else if(std::stoi(dates.at(1))<std::stoi(datesF.at(1))){
+                   // std::cout << "nespustit1" << std::endl;
+                  //  std::cout <<std::stoi(dates.at(1))<<endl;
+                  //  std::cout <<std::stoi(datesF.at(1))<<endl;
+                    datumSpusti=false;
+                }else{
+                    if(std::stoi(dates.at(0))>std::stoi(datesF.at(0))){
+                   //     std::cout << "spustit0" << std::endl;
+                        datumSpusti=true;
+                    }else if(std::stoi(dates.at(0))<std::stoi(datesF.at(0))){
+                     //   std::cout << "nespustit0" << std::endl;
+                     //   std::cout <<std::stoi(dates.at(0))<<endl;
+                     //   std::cout <<std::stoi(datesF.at(0))<<endl;
+                        datumSpusti=false;
+                    }else {
+                     //   std::cout << "spustit00" << std::endl;
+                        datumSpusti=true;
+                    }
+                }
 
-            if(schedtm > currenttm)
-                cout << "you have enough time... chill" << endl;
-            if (schedtm <= currenttm) {
-                cout << "start download..." << endl;
+            }
+           // cout<<datumSpusti<<std::endl;
+
+            //cas
+
+            bool spustit=false;
+
+            if(datumSpusti) {
+                string stime = json_object_get_string(time);
+                auto now = std::chrono::system_clock::now();
+                auto in_time_t = std::chrono::system_clock::to_time_t(now);
+                std::stringstream ss;
+                ss << std::put_time(std::localtime(&in_time_t), "%X");
+
+
+                std::vector<std::string> timeE;
+                //separateCommand(timeE,stime);
+                size_t pos;
+                while ((pos = stime.find(":")) != std::string::npos) {
+                    timeE.push_back(stime.substr(0, pos));
+                    stime.erase(0, pos + 1);
+                }
+                timeE.push_back(stime);
+
+                std::vector<std::string> CtimeE;
+                std::string cTime = ss.str();
+
+
+                size_t pos1;
+                while ((pos1 = cTime.find(":")) != std::string::npos) {
+                    CtimeE.push_back(cTime.substr(0, pos1));
+                    cTime.erase(0, pos1 + 1);
+                }
+                CtimeE.push_back(cTime);
+
+                if (std::stoi(timeE.at(0)) < std::stoi(CtimeE.at(0))) {
+              //      std::cout << "spustit0" << std::endl;
+                    spustit = true;
+                } else if (std::stoi(timeE.at(0)) > std::stoi(CtimeE.at(0))) {
+                //    std::cout << "nespustit0" << std::endl;
+                    spustit = false;
+                } else {
+                    if (std::stoi(timeE.at(1)) < std::stoi(CtimeE.at(1))) {
+                //        std::cout << "spustit1" << std::endl;
+                        spustit = true;
+                    } else if (std::stoi(timeE.at(1)) > std::stoi(CtimeE.at(1))) {
+                 //       std::cout << "nespustit1" << std::endl;
+                        spustit = false;
+
+                    } else {
+                        if (std::stoi(timeE.at(2)) < std::stoi(CtimeE.at(2))) {
+                  //          std::cout << "spustit2" << std::endl;
+                            spustit = true;
+                        } else if (std::stoi(timeE.at(2)) > std::stoi(CtimeE.at(2))) {
+                     //       std::cout << "nespustit2" << std::endl;
+                            spustit = false;
+                        } else {
+                     //       std::cout << "spustit2" << std::endl;
+                            spustit = true;
+                        }
+                    }
+                }
+
+
+            }
+            if (spustit) {
+               // cout << "start download..." << endl;
 
                 //plan protocol hostname filename time priority username password
 
@@ -234,33 +356,31 @@ void jsonGetAllInfo() {
                 final += " ";
                 final += json_object_get_string(filename);
                 final += " ";
-                final += json_object_get_string(time);
-                final += " ";
                 final += json_object_get_string(priority);
-                final += " ";
-                final += json_object_get_string(username);
-                final += " ";
-                final += json_object_get_string(password);
+                 // final += " ";
+                 //final += json_object_get_string(username);
+                 // final += " ";
+                 //final += json_object_get_string(password);
+                i=length;
 
-                cout << final << endl;
+                //cout << final << endl;
 
                 json_object_object_del(object, name.c_str());
                 json_object_to_file_ext("json-test.json", object, JSON_C_TO_STRING_SPACED | JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE);
             }
             flnum++;
         } else {
-            cout << name << " not found, searching again..." << endl;
+            //cout << name << " not found, searching again..." << endl;
             flnum++;
             i--;
         }
 
-        cout << "*******************************************************************************************" << endl;
+       // cout << "*******************************************************************************************" << endl;
     }
-
+    s=final;
     json_object_put(object);
     free(buffer);
 }
-
 void addToHistory(string fn) {
     struct json_object *object1;
 

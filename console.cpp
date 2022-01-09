@@ -55,15 +55,13 @@ void console::listener() {
                 } else if (first == "setPriority") {
                     dH->setPriority(std::stoi(elements.at(1)), std::stoi(elements.at(2)));
                 } else if (first == "plan") {
-                    int priority = elements.size() > 4 ? std::stoi(elements.at(4)) : 0;
-                    std::string username = elements.size() > 5 ? elements.at(5) : "";
-                    std::string password = elements.size() > 6 ? elements.at(6) : "";
+                    std::string priority = elements.size() > 6 ? elements.at(6) : "0";
+                    std::string username = elements.size() > 7 ? elements.at(7) : "";
+                    std::string password = elements.size() > 8 ? elements.at(8) : "";
 
-                    /*
-                    dH->plan(elements.at(1), elements.at(3), elements.at(2), pathToDownload,
+                    dH->plan(elements.at(1), elements.at(2), elements.at(3), elements.at(4), elements.at(5),
                              priority, username, password);
-
-                    */
+                    //plan protocol hostname filename date time priority username password
                 } else if (first == "schedule") {
                     dH->schedule();
                 }
