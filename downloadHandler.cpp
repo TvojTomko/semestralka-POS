@@ -221,3 +221,9 @@ void downloadHandler::history() {
 void downloadHandler::schedule() {
     jsonReadSchedule();
 }
+
+void downloadHandler::plan(std::string hostnamep, std::string filenamep, std::string localfilenamep, std::string pathp,
+                           std::string sizep, std::string downloadedp, std::string protocolp, std::string priorityp,
+                           std::string timep) {
+    jsonWrite(hostnamep, filenamep, localfilenamep, pathp, sizep, downloadedp, protocolp, priorityp, timep);
+}
