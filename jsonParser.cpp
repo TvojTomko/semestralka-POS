@@ -482,3 +482,71 @@ void jsonReadHistory() {
     json_object_put(files);
     free(buffer);
 }
+
+void addObjectToHistory(string protocolp, string hostnamep, string filenamep, string priorityp, string usernamep, string passwordp) {
+    struct json_object *object;
+
+    long sz;
+
+    fp = fopen("history.json", "r");
+    if (fp == nullptr) {
+        cout << "Error opening file...";
+        return;
+    }
+    fseek(fp, 0L, SEEK_END);
+    sz = ftell(fp);
+    fclose(fp);
+    //cout << sz;
+
+    buffer = (char*)malloc(sz);
+
+    fp = fopen("history.json", "r");
+    if (fp == nullptr) {
+        cout << "Error opening file...";
+        return;
+    }
+
+    fp = fopen("history.json", "r");
+    if (fp == nullptr) {
+        cout << "Error opening file...";
+        return;
+    }
+    fread(buffer, sz, 1, fp);
+    fclose(fp);
+
+    object = json_tokener_parse(buffer);
+
+    int num = 1;
+    string name;
+
+
+    for (int i = 0; i < json_object_object_length(object); ++i) {
+        name = "file" + to_string(num);
+
+        if (json_object_object_get(object, name.c_str()) != nullptr) {
+            //json_object_object_get(object, name.c_str());
+            num++;
+        } else {
+            i--;
+            num++;
+        }
+    }
+
+    string key = "file" + to_string(num);
+
+    cout << "Inserting: " << key << " ..." << endl;
+
+    json_object_object_add(file, "protocol", json_object_new_string(protocolp.c_str()));
+    json_object_object_add(file, "hostname", json_object_new_string(hostnamep.c_str()));
+    json_object_object_add(file, "filename", json_object_new_string(filenamep.c_str()));
+    json_object_object_add(file, "priority", json_object_new_string(priorityp.c_str()));
+    json_object_object_add(file, "username", json_object_new_string(usernamep.c_str()));
+    json_object_object_add(file, "password", json_object_new_string(passwordp.c_str()));
+
+    json_object_object_add(object, key.c_str(), file);
+
+    json_object_to_file_ext("history.json", object, JSON_C_TO_STRING_SPACED | JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE);
+
+    json_object_put(object);
+    free(buffer);
+}
