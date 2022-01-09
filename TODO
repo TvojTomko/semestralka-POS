@@ -1,0 +1,54 @@
+protokoly -tomko/ado
+http,https,ftp,ftps
+https://titanwolf.org/Network/Articles/Article?AID=6f6d2857-70ce-4456-9f0a-9589d41d4274 -- ftp
+
+planovanie stahovania -tomko
+naplanuj protocol hostname filename start
+prida sa do suboru 
+pri spusteni programu sa vytvori nove vlakno ktore bude kazdu minutu kontrolovat ci sa ma nieco zacat stahovat ak ano tak sa vytvori dalsie vlakno kde sa bude stahovat dana vec ktora sa odpise zo suboru
+
+ukonci stahovanie -tomko
+vypis
+zrus poradove_cislo
+thready budu vo vectore uzivatel si vyberie ktore zrusit vymazat nedostahovany subor
+
+spravovat lokalne adresare
+ls
+mkdir
+rmdir
+rm
+cd
+
+spravovat historiu stahovania -tomko
+vypis historie
+vsetko co sa da stahovat sa ulozi do suboru info to sa potom vypise napr zaciatok stahovania velkost koniec stahovania atd
+
+definovat prioritu stahovania -ado
+??
+
+pozastavit alebo obnovit stahovanie -ado
+treba zistit
+https://superuser.com/a/641957
+iba http/https
+v subore uchovavat velkost kolko stiahnuteho z kolkatich pre ktory subor a cestu
+
+
+
+funkcie konzoly -ado
+ls
+mkdir
+rmdir
+rm
+cd
+download 
+history
+pause
+resume
+stop
+setpath
+help
+info
+exit
+odchytavanie signalov
+
+
