@@ -44,6 +44,10 @@ private:
 public:
     void setPriority(int priority);
 
+    const std::string &getUsername() const;
+
+    const std::string &getPassword() const;
+
     std::string msg = "";
 
     bool isDownloading() const;

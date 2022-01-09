@@ -18,5 +18,5 @@ void fileHandler::addSchedule(std::string protocolp, std::string hostnamep, std:
 }
 
 void fileHandler::addToHistory(std::string protocolp, std::string hostnamep, std::string filenamep, std::string priorityp, std::string usernamep, std::string passwordp) {
-    addToHistory(protocolp, hostnamep, filenamep, priorityp, usernamep, passwordp);
+    addObjectToHistory(protocolp, hostnamep, filenamep, priorityp, usernamep, passwordp);
 }

@@ -776,3 +776,11 @@ std::string download::getHostAndPort(std::string &strResult) {
     return strPort;
 }
 
+const std::string &download::getUsername() const {
+    return username;
+}
+
+const std::string &download::getPassword() const {
+    return password;
+}
+

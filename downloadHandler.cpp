@@ -176,6 +176,10 @@ void downloadHandler::pauseAll() {
 
 void downloadHandler::exitProgram() {
     exit = true;
+    fileHandler fh;
+    for (auto d: downloads) {
+        fh.addToHistory(d->getAProtocol(),d->getHostname(),d->getFilename(), std::to_string(d->getPriority()),d->getUsername(),d->getPassword());
+    }
     deleteAll();
 }
 
