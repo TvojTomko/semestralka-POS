@@ -222,8 +222,10 @@ void downloadHandler::schedule() {
     jsonReadSchedule();
 }
 
-void downloadHandler::plan(std::string hostnamep, std::string filenamep, std::string localfilenamep, std::string pathp,
-                           std::string sizep, std::string downloadedp, std::string protocolp, std::string priorityp,
-                           std::string timep) {
-    jsonWrite(hostnamep, filenamep, localfilenamep, pathp, sizep, downloadedp, protocolp, priorityp, timep);
+void downloadHandler::plan(std::string protocolp, std::string hostnamep, std::string filenamep, std::string timep,
+                           std::string priorityp, std::string usernamep, std::string passwordp) {
+    //plan protocol hostname filename time priority username password
+
+
+    jsonWrite(protocolp, hostnamep, filenamep, timep, priorityp, usernamep, passwordp);
 }

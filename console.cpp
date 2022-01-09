@@ -55,7 +55,12 @@ void console::listener() {
                 } else if (first == "setPriority") {
                     dH->setPriority(std::stoi(elements.at(1)), std::stoi(elements.at(2)));
                 } else if (first == "plan") {
-                    //TODO planning
+                    int priority = elements.size() > 4 ? std::stoi(elements.at(4)) : 0;
+                    std::string username = elements.size() > 5 ? elements.at(5) : "";
+                    std::string password = elements.size() > 6 ? elements.at(6) : "";
+
+                    dH->plan(elements.at(1), elements.at(3), elements.at(2), pathToDownload,
+                             priority, username, password);
                 } else if (first == "schedule") {
                     dH->schedule();
                 }

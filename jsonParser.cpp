@@ -56,7 +56,8 @@ void jsonReadSchedule() {
     free(buffer);
 }
 
-void jsonWrite(string hostnamep, string filenamep, string localfilenamep, string pathp, string sizep, string downloadedp, string protocolp, string priorityp, string timep) {
+void jsonWrite(std::string protocolp, std::string hostnamep, std::string filenamep, std::string timep,
+               std::string priorityp, std::string usernamep, std::string passwordp) {
     struct json_object *object;
     long sz;
 
@@ -108,31 +109,16 @@ void jsonWrite(string hostnamep, string filenamep, string localfilenamep, string
 
     //fileh = json_object_new_object();
 
+    //plan protocol hostname filename time priority username password
 
+    json_object_object_add(file, "protocol", json_object_new_string(protocolp.c_str()));
     json_object_object_add(file, "hostname", json_object_new_string(hostnamep.c_str()));
     json_object_object_add(file, "filename", json_object_new_string(filenamep.c_str()));
-    json_object_object_add(file, "localfilename", json_object_new_string(localfilenamep.c_str()));
-    json_object_object_add(file, "path", json_object_new_string(pathp.c_str()));
-    json_object_object_add(file, "size", json_object_new_string(sizep.c_str()));
-    json_object_object_add(file, "downloaded", json_object_new_string(downloadedp.c_str()));
-    json_object_object_add(file, "protocol", json_object_new_string(protocolp.c_str()));
-    json_object_object_add(file, "priority", json_object_new_string(priorityp.c_str()));
     json_object_object_add(file, "scheduled-time",json_object_new_string(timep.c_str()));
+    json_object_object_add(file, "priority", json_object_new_string(priorityp.c_str()));
+    json_object_object_add(file, "username", json_object_new_string(usernamep.c_str()));
+    json_object_object_add(file, "password", json_object_new_string(passwordp.c_str()));
 
-
-    /*
-    json_object_object_add(fileh, "hostname", json_object_new_string(hostnamep.c_str()));
-    json_object_object_add(fileh, "filename", json_object_new_string(filenamep.c_str()));
-    json_object_object_add(fileh, "localfilename", json_object_new_string(localfilenamep.c_str()));
-    json_object_object_add(fileh, "path", json_object_new_string(pathp.c_str()));
-    json_object_object_add(fileh, "size", json_object_new_string(sizep.c_str()));
-    json_object_object_add(fileh, "downloaded", json_object_new_string(downloadedp.c_str()));
-    json_object_object_add(fileh, "protocol", json_object_new_string(protocolp.c_str()));
-    json_object_object_add(fileh, "priority", json_object_new_string(priorityp.c_str()));
-    json_object_object_add(fileh, "scheduled-time",json_object_new_string(timep.c_str()));
-
-    */
-    //struct json_object *history = json_object_new_object();
 
     json_object_object_add(object, key.c_str(), file);
     //json_object_object_add(history, key.c_str(), fileh);
@@ -152,18 +138,18 @@ void jsonWrite(string hostnamep, string filenamep, string localfilenamep, string
 }
 
 void jsonGetAllInfo() {
+
+    //plan protocol hostname filename time priority username password
+
     struct json_object *object;
 
+    struct json_object *protocol;
     struct json_object *hostname;
     struct json_object *filename;
-    struct json_object *localfilename;
-    struct json_object *path;
-    struct json_object *size;
-    struct json_object *downloaded;
-    struct json_object *protocol;
-    struct json_object *priority;
-
     struct json_object *time;
+    struct json_object *priority;
+    struct json_object *username;
+    struct json_object *password;
 
     string final;
 
@@ -212,15 +198,15 @@ void jsonGetAllInfo() {
 
             //cout << json_object_to_json_string_ext(file, JSON_C_TO_STRING_SPACED | JSON_C_TO_STRING_PRETTY) << endl;
 
+            //plan protocol hostname filename time priority username password
+
+            json_object_object_get_ex(file, "protocol", &protocol);
             json_object_object_get_ex(file, "hostname", &hostname);
             json_object_object_get_ex(file, "filename", &filename);
-            json_object_object_get_ex(file, "localfilename", &localfilename);
-            json_object_object_get_ex(file, "path", &path);
-            json_object_object_get_ex(file, "size", &size);
-            json_object_object_get_ex(file, "downloaded", &downloaded);
-            json_object_object_get_ex(file, "protocol", &protocol);
-            json_object_object_get_ex(file, "priority", &priority);
             json_object_object_get_ex(file, "scheduled-time", &time);
+            json_object_object_get_ex(file, "priority", &priority);
+            json_object_object_get_ex(file, "username", &username);
+            json_object_object_get_ex(file, "password", &password);
 
             string stime = json_object_get_string(time);
             std::tm schedtime = {};
@@ -240,21 +226,21 @@ void jsonGetAllInfo() {
             if (schedtm <= currenttm) {
                 cout << "start download..." << endl;
 
+                //plan protocol hostname filename time priority username password
+
+                final += json_object_get_string(protocol);
+                final += " ";
                 final += json_object_get_string(hostname);
                 final += " ";
                 final += json_object_get_string(filename);
                 final += " ";
-                final += json_object_get_string(localfilename);
-                final += " ";
-                final += json_object_get_string(path);
-                final += " ";
-                final += json_object_get_string(size);
-                final += " ";
-                final += json_object_get_string(downloaded);
-                final += " ";
-                final += json_object_get_string(protocol);
+                final += json_object_get_string(time);
                 final += " ";
                 final += json_object_get_string(priority);
+                final += " ";
+                final += json_object_get_string(username);
+                final += " ";
+                final += json_object_get_string(password);
 
                 cout << final << endl;
 

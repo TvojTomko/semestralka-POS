@@ -79,7 +79,8 @@ public:
 
     void schedule();
 
-    void plan(std::string hostnamep, std::string filenamep, std::string localfilenamep, std::string pathp, std::string sizep, std::string downloadedp, std::string protocolp, std::string priorityp, std::string timep);
+    void plan(std::string protocolp, std::string hostnamep, std::string filenamep, std::string timep,
+              std::string priorityp, std::string usernamep, std::string passwordp);
 };
 
 
