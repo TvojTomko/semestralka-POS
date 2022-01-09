@@ -1,5 +1,3 @@
-//verzia 2
-
 #include <json-c/json.h>
 #include <iostream>
 #include <chrono>
