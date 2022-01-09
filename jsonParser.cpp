@@ -63,7 +63,6 @@ void jsonReadSchedule() {
     json_object_put(files);
     free(buffer);
 }
-
 void jsonWrite(std::string protocolp, std::string hostnamep, std::string filenamep,std::string date, std::string timep,
                std::string priorityp, std::string usernamep, std::string passwordp) {
     struct json_object *object;
@@ -145,9 +144,6 @@ void jsonWrite(std::string protocolp, std::string hostnamep, std::string filenam
     addToHistory(key);
 
 }
-
-
-
 void jsonGetAllInfo(std::string &s) {
 
     //plan protocol hostname filename time priority username password
@@ -482,7 +478,6 @@ void jsonReadHistory() {
     json_object_put(files);
     free(buffer);
 }
-
 void addObjectToHistory(string protocolp, string hostnamep, string filenamep, string priorityp, string usernamep, string passwordp) {
     struct json_object *object;
 
@@ -533,6 +528,7 @@ void addObjectToHistory(string protocolp, string hostnamep, string filenamep, st
     }
 
     string key = "file" + to_string(num);
+    file = json_object_new_object();
 
     cout << "Inserting: " << key << " ..." << endl;
 

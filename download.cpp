@@ -752,7 +752,6 @@ int download::getRetCode(const std::string &stringLine) {
     return nRetCode;
 }
 
-
 std::string download::getHostAndPort(std::string &strResult) {
     size_t nBegin = strResult.find("(");
     size_t nEnd = strResult.find(")");
