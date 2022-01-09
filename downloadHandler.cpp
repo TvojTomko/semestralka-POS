@@ -45,9 +45,9 @@ void downloadHandler::addDownload(download *d) {
 //Konzument ked Producent najde download s najvyssiou prioritou skontroluje ci je vyssia ako aktualnhe stahovane ak ano tak pausne stahovanie s najnizsiou prioritou a zacne stahovat dany subor
 void downloadHandler::manageDownloadings() {
     manage = true;
-    std::jthread th(&downloadHandler::produce, this);
+    th=std::jthread(&downloadHandler::produce, this);
     th.detach();
-    std::jthread th1(&downloadHandler::consume, this);
+    th1=std::jthread(&downloadHandler::consume, this);
     th1.detach();
     sConsume.release();
 }
@@ -66,6 +66,7 @@ void downloadHandler::produce() {
         data = index;
         sProduce.release();
     }
+
 }
 
 void downloadHandler::consume() {
@@ -176,6 +177,8 @@ void downloadHandler::pauseAll() {
 
 void downloadHandler::exitProgram() {
     exit = true;
+    th.request_stop();
+    th1.request_stop();
     fileHandler fh;
     for (auto d: downloads) {
         fh.addToHistory(d->getAProtocol(),d->getHostname(),d->getFilename(), std::to_string(d->getPriority()),d->getUsername(),d->getPassword());

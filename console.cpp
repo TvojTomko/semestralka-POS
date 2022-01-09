@@ -43,6 +43,7 @@ void console::listener() {
                     std::cout << "To exit the program type exit" << std::endl;
                 } else if (first == "exit") {
                     exitProgram();
+                    sleep(2);
                 } else if (first == "info") {
                     info();
                 } else if (first == "startAll") {

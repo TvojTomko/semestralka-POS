@@ -29,6 +29,8 @@ private:
     int data;
     std::vector<int> downloadingIndex;
     bool manage;
+    std::jthread th;
+    std::jthread th1;
 
 
 public:

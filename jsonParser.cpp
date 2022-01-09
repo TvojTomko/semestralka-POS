@@ -1,14 +1,3 @@
-#include <json-c/json.h>
-#include <iostream>
-#include <chrono>
-#include <time.h>
-#include <sstream>
-#include <chrono>  // chrono::system_clock
-#include <ctime>   // localtime
-#include <sstream> // stringstream
-#include <iomanip> // put_time
-#include <string>  // string
-#include <vector>
 
 #include "jsonParser.h"
 

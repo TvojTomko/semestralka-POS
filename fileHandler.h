@@ -1,5 +1,8 @@
 #ifndef SEMESTRALKA_FILEHANDLER_H
 #define SEMESTRALKA_FILEHANDLER_H
+#include <iostream>
+
+#include "jsonParser.h"
 
 class fileHandler {
     public: void history();
