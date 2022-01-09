@@ -2,6 +2,7 @@
 // Created by looper on 31. 12. 2021.
 //
 #include "download.h"
+#include "jsonParser.h"
 #include <semaphore>
 #include <thread>
 #include <mutex>
@@ -73,6 +74,8 @@ public:
     int getNumberOdDownloads();
 
     bool isManage() const;
+
+    void history();
 };
 
 

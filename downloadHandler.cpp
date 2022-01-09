@@ -213,3 +213,7 @@ int downloadHandler::getNumberOdDownloads() {
 bool downloadHandler::isManage() const {
     return manage;
 }
+
+void downloadHandler::history() {
+    jsonReadHistory();
+}

@@ -5,7 +5,7 @@
 using namespace std;
 
 void fileHandler::history() {
-    jsonReadAll();
+    jsonReadSchedule();
 }
 
 void fileHandler::checkSchedule() {

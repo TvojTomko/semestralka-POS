@@ -25,7 +25,7 @@ void console::listener() {
                             new download(elements.at(1), elements.at(3), elements.at(2), pathToDownload,
                                          priority, username, password));
                 } else if (first == "history") {
-                    //TODO history
+                    dH->history();
                 } else if (first == "pause") {
                     dH->pauseDownloading(std::stoi(elements.at(1)));
                 } else if (first == "resume") {

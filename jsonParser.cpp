@@ -17,7 +17,7 @@ struct json_object *fileh;
 
 struct json_object *fileContent;
 
-void jsonReadAll() {
+void jsonReadSchedule() {
     struct json_object *files;
 
     long sz;
@@ -336,5 +336,43 @@ void addToHistory(string fn) {
 
     json_object_put(object1);
 
+    free(buffer);
+}
+void jsonReadHistory() {
+    struct json_object *files;
+
+    long sz;
+
+    fp = fopen("history.json", "r");
+    if (fp == nullptr) {
+        cout << "Error opening file...";
+        return;
+    }
+    fseek(fp, 0L, SEEK_END);
+    sz = ftell(fp);
+    fclose(fp);
+    //cout << sz;
+
+    buffer = (char*)malloc(sz);
+
+    fp = fopen("history.json", "r");
+    if (fp == nullptr) {
+        cout << "Error opening file...";
+        return;
+    }
+    fread(buffer, sz, 1, fp);
+    fclose(fp);
+
+
+    files = json_object_new_array();
+    json_object_array_add(files, json_tokener_parse(buffer));
+
+    filesNum = json_object_array_length(files);
+
+    fileContent = json_object_array_get_idx(files, 0);
+
+    cout << "Reading json... " << endl << json_object_to_json_string_ext(fileContent,JSON_C_TO_STRING_SPACED | JSON_C_TO_STRING_PRETTY) << endl;
+
+    json_object_put(files);
     free(buffer);
 }
