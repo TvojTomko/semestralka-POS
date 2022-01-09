@@ -13,8 +13,7 @@ void fileHandler::checkSchedule() {
 }
 
 void
-fileHandler::addSchedule(std::string hostnamep, std::string filenamep, std::string localfilenamep, std::string pathp,
-                         std::string sizep, std::string downloadedp, std::string protocolp, std::string priorityp,
-                         std::string timep) {
-    jsonWrite(hostnamep, filenamep, localfilenamep, pathp, sizep, downloadedp, protocolp, priorityp, timep);
+fileHandler::addSchedule(std::string protocolp, std::string hostnamep, std::string filenamep, std::string timep,
+                         std::string priorityp, std::string usernamep, std::string passwordp) {
+    jsonWrite( protocolp, hostnamep, filenamep, timep, priorityp, usernamep, passwordp);
 }

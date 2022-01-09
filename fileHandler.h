@@ -3,7 +3,8 @@
 
 class fileHandler {
     public: void history();
-            void addSchedule(std::string hostnamep, std::string filenamep, std::string localfilenamep, std::string pathp, std::string sizep, std::string downloadedp, std::string protocolp, std::string priorityp, std::string timep);
+            void addSchedule(std::string protocolp, std::string hostnamep, std::string filenamep, std::string timep,
+                             std::string priorityp, std::string usernamep, std::string passwordp);
             void checkSchedule();
 };
 

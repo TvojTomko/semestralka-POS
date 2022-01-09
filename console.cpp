@@ -59,8 +59,11 @@ void console::listener() {
                     std::string username = elements.size() > 5 ? elements.at(5) : "";
                     std::string password = elements.size() > 6 ? elements.at(6) : "";
 
+                    /*
                     dH->plan(elements.at(1), elements.at(3), elements.at(2), pathToDownload,
                              priority, username, password);
+
+                    */
                 } else if (first == "schedule") {
                     dH->schedule();
                 }
