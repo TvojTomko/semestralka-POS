@@ -1,8 +1,8 @@
+//verzia 2
+
 #include <json-c/json.h>
 #include <iostream>
-#include <iomanip>
 #include <chrono>
-#include <ctime>
 #include <time.h>
 
 #include "jsonParser.h"
@@ -15,6 +15,8 @@ size_t filesNum;
 
 struct json_object *file;
 
+struct json_object *fileh;
+
 struct json_object *fileContent;
 
 void jsonReadAll() {
@@ -23,7 +25,7 @@ void jsonReadAll() {
     long sz;
 
     fp = fopen("json-test.json", "r");
-    if (fp == NULL) {
+    if (fp == nullptr) {
         cout << "Error opening file...";
         return;
     }
@@ -35,7 +37,7 @@ void jsonReadAll() {
     buffer = (char*)malloc(sz);
 
     fp = fopen("json-test.json", "r");
-    if (fp == NULL) {
+    if (fp == nullptr) {
         cout << "Error opening file...";
         return;
     }
@@ -48,9 +50,9 @@ void jsonReadAll() {
 
     filesNum = json_object_array_length(files);
 
-        fileContent = json_object_array_get_idx(files, 0);
+    fileContent = json_object_array_get_idx(files, 0);
 
-        cout << "Reading json... " << endl << json_object_to_json_string_ext(fileContent,JSON_C_TO_STRING_SPACED | JSON_C_TO_STRING_PRETTY) << endl;
+    cout << "Reading json... " << endl << json_object_to_json_string_ext(fileContent,JSON_C_TO_STRING_SPACED | JSON_C_TO_STRING_PRETTY) << endl;
 
     json_object_put(files);
     free(buffer);
@@ -61,11 +63,11 @@ void jsonWrite(string hostnamep, string filenamep, string localfilenamep, string
     long sz;
 
     fp = fopen("json-test.json", "r");
-    if (fp == NULL) {
-    cout << "Error opening file...";
-    return;
+    if (fp == nullptr) {
+        cout << "Error opening file...";
+        return;
     }
-fseek(fp, 0L, SEEK_END);
+    fseek(fp, 0L, SEEK_END);
     sz = ftell(fp);
     fclose(fp);
     //cout << sz;
@@ -73,9 +75,9 @@ fseek(fp, 0L, SEEK_END);
     buffer = (char*)malloc(sz);
 
     fp = fopen("json-test.json", "r");
-    if (fp == NULL) {
-    cout << "Error opening file...";
-    return;
+    if (fp == nullptr) {
+        cout << "Error opening file...";
+        return;
     }
     fread(buffer, sz, 1, fp);
     fclose(fp);
@@ -105,6 +107,10 @@ fseek(fp, 0L, SEEK_END);
 
     file = json_object_new_object();
 
+
+    //fileh = json_object_new_object();
+
+
     json_object_object_add(file, "hostname", json_object_new_string(hostnamep.c_str()));
     json_object_object_add(file, "filename", json_object_new_string(filenamep.c_str()));
     json_object_object_add(file, "localfilename", json_object_new_string(localfilenamep.c_str()));
@@ -113,24 +119,38 @@ fseek(fp, 0L, SEEK_END);
     json_object_object_add(file, "downloaded", json_object_new_string(downloadedp.c_str()));
     json_object_object_add(file, "protocol", json_object_new_string(protocolp.c_str()));
     json_object_object_add(file, "priority", json_object_new_string(priorityp.c_str()));
-
     json_object_object_add(file, "scheduled-time",json_object_new_string(timep.c_str()));
 
 
+    /*
+    json_object_object_add(fileh, "hostname", json_object_new_string(hostnamep.c_str()));
+    json_object_object_add(fileh, "filename", json_object_new_string(filenamep.c_str()));
+    json_object_object_add(fileh, "localfilename", json_object_new_string(localfilenamep.c_str()));
+    json_object_object_add(fileh, "path", json_object_new_string(pathp.c_str()));
+    json_object_object_add(fileh, "size", json_object_new_string(sizep.c_str()));
+    json_object_object_add(fileh, "downloaded", json_object_new_string(downloadedp.c_str()));
+    json_object_object_add(fileh, "protocol", json_object_new_string(protocolp.c_str()));
+    json_object_object_add(fileh, "priority", json_object_new_string(priorityp.c_str()));
+    json_object_object_add(fileh, "scheduled-time",json_object_new_string(timep.c_str()));
+
+    */
+    //struct json_object *history = json_object_new_object();
 
     json_object_object_add(object, key.c_str(), file);
+    //json_object_object_add(history, key.c_str(), fileh);
 
     json_object_to_file_ext("currentdownload.json", file, JSON_C_TO_STRING_SPACED | JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE);
 
     //json_object_to_file_ext("history.json", file, JSON_C_TO_STRING_SPACED | JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE);
 
-    addToHistory(file, key);
-
     json_object_to_file_ext("json-test.json", object, JSON_C_TO_STRING_SPACED | JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE);
 
+    //json_object_put(history);
     //json_object_put(file);
     json_object_put(object);
     free(buffer);
+    addToHistory(key);
+
 }
 
 void jsonGetAllInfo() {
@@ -153,9 +173,9 @@ void jsonGetAllInfo() {
 
     fp = fopen("json-test.json", "r");
 
-    if (fp == NULL) {
-    cout << "Error opening file...";
-    return;
+    if (fp == nullptr) {
+        cout << "Error opening file...";
+        return;
     }
 
     fseek(fp, 0L, SEEK_END);
@@ -167,7 +187,7 @@ void jsonGetAllInfo() {
 
     fp = fopen("json-test.json", "r");
 
-    if (fp == NULL) {
+    if (fp == nullptr) {
         cout << "Error opening file...";
         return;
     }
@@ -218,7 +238,7 @@ void jsonGetAllInfo() {
             cout << "current time: " << std::ctime(&currenttm) << endl;
 
             if(schedtm > currenttm)
-            cout << "you have enough time... chill" << endl;
+                cout << "you have enough time... chill" << endl;
             if (schedtm <= currenttm) {
                 cout << "start download..." << endl;
 
@@ -243,7 +263,6 @@ void jsonGetAllInfo() {
                 json_object_object_del(object, name.c_str());
                 json_object_to_file_ext("json-test.json", object, JSON_C_TO_STRING_SPACED | JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE);
             }
-
             flnum++;
         } else {
             cout << name << " not found, searching again..." << endl;
@@ -258,48 +277,13 @@ void jsonGetAllInfo() {
     free(buffer);
 }
 
-void jsonDelete(string fn) {
-    struct json_object *object;
-
-    long sz;
-
-    fp = fopen("json-test.json", "r");
-    if (fp == NULL) {
-        cout << "Error opening file...";
-        return;
-    }
-    fseek(fp, 0L, SEEK_END);
-    sz = ftell(fp);
-    fclose(fp);
-    //cout << sz;
-
-    buffer = (char*)malloc(sz);
-
-    fp = fopen("json-test.json", "r");
-    if (fp == NULL) {
-        cout << "Error opening file...";
-        return;
-    }
-    fread(buffer, sz, 1, fp);
-    fclose(fp);
-
-    object = json_tokener_parse(buffer);
-
-    json_object_object_del(object, fn.c_str());
-
-    json_object_to_file_ext("json-test.json", object, JSON_C_TO_STRING_SPACED | JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE);
-
-    json_object_put(object);
-    free(buffer);
-}
-
-void addToHistory(struct json_object *p, string fn) {
+void addToHistory(string fn) {
     struct json_object *object1;
 
     long sz;
 
     fp = fopen("history.json", "r");
-    if (fp == NULL) {
+    if (fp == nullptr) {
         cout << "Error opening file...";
         return;
     }
@@ -311,7 +295,13 @@ void addToHistory(struct json_object *p, string fn) {
     buffer = (char*)malloc(sz);
 
     fp = fopen("history.json", "r");
-    if (fp == NULL) {
+    if (fp == nullptr) {
+        cout << "Error opening file...";
+        return;
+    }
+
+    fp = fopen("history.json", "r");
+    if (fp == nullptr) {
         cout << "Error opening file...";
         return;
     }
@@ -320,10 +310,33 @@ void addToHistory(struct json_object *p, string fn) {
 
     object1 = json_tokener_parse(buffer);
 
-    json_object_object_add(object1, fn.c_str(), p);
+    free(buffer);
+
+    fp = fopen("currentdownload.json", "r");
+    if (fp == nullptr) {
+        cout << "Error opening file...";
+        return;
+    }
+    fseek(fp, 0L, SEEK_END);
+    sz = ftell(fp);
+    fclose(fp);
+    //cout << sz;
+
+    buffer = (char*)malloc(sz);
+
+    fp = fopen("currentdownload.json", "r");
+    if (fp == nullptr) {
+        cout << "Error opening file...";
+        return;
+    }
+    fread(buffer, sz, 1, fp);
+    fclose(fp);
+
+    json_object_object_add(object1, fn.c_str(), json_tokener_parse(buffer));
 
     json_object_to_file_ext("history.json", object1,JSON_C_TO_STRING_SPACED | JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE);
 
     json_object_put(object1);
+
     free(buffer);
 }
