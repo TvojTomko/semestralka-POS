@@ -227,8 +227,8 @@ void downloadHandler::schedule() {
 void downloadHandler::plan(std::string protocolp, std::string hostnamep, std::string filenamep,std::string date, std::string timep,
                            std::string priorityp, std::string usernamep, std::string passwordp) {
     //plan protocol hostname filename time priority username password
-
-    jsonWrite(protocolp, hostnamep, filenamep,date, timep, priorityp, usernamep, passwordp);
+    fileHandler fh;
+    fh.addSchedule(protocolp, hostnamep, filenamep,date, timep, priorityp, usernamep, passwordp);
 }
 
 void downloadHandler::checkSchedule(){
@@ -245,7 +245,7 @@ void downloadHandler::checkSchedule(){
             }
             v.push_back(command);
             std::string pathToDownload;
-            addDownload(new download(v.at(1), v.at(3), v.at(2), pathToDownload,
+            addDownload(new download(v.at(0), v.at(2), v.at(1), pathToDownload,
                                      0, "", ""));
         }
     }

@@ -3,6 +3,7 @@
 //
 #include "download.h"
 #include "jsonParser.h"
+#include "fileHandler.h"
 #include <semaphore>
 #include <thread>
 #include <mutex>
