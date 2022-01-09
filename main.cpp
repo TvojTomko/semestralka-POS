@@ -1,15 +1,20 @@
 #include <iostream>
-#include "jsonParser.h"
+#include "fileHandler.h"
 
 using namespace std;
 
 int main() {
-    jsonWrite();
 
-    jsonDelete();
+    fileHandler fh;
 
-    jsonRead();
+    //fh.history();
 
-    jsonGetInfo();
+    fh.addSchedule("hname", "fname", "lfname", "path/path", "123", "100", "http", "1", "Sat Jan 8 14:23:51 2022");
+
+    fh.addSchedule("hname", "fname", "lfname", "path/path", "123", "100", "http", "1", "Sat Jan 15 14:23:51 2022");
+
+    fh.checkSchedule();
+
+
     return 0;
 }
